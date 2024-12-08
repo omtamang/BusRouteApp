@@ -29,7 +29,7 @@ export default function Basicmap(){
     }
 
     const iconPerson = new L.Icon({
-        iconUrl: require("../images/current_location.png"),
+        iconUrl: require("./current_location.png"),
         iconSize: [45, 45]
     })
 
