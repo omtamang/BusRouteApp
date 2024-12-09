@@ -15,7 +15,11 @@ export default function Landing() {
             </div>
 
             <div className="text-[#45534A] text-center mt-[90px]">
-                <button className="bg-[#1D8F34] text-white text-[24px] w-11/12 h-[60px] rounded-full">Getting Started</button>
+                <Link to={'/login'}>
+                    <button className="bg-[#1D8F34] text-white text-[24px] w-11/12 h-[60px] rounded-full">
+                        Getting Started
+                    </button>
+                </Link>
                 <p className="pt-2 text-[16px]">Already have an account? <Link to="/login" className="no-underline text-[#AC1A0F]">Login</Link></p>
             </div>
         </div> 

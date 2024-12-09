@@ -2,6 +2,9 @@ import { Formik, Form, Field } from "formik";
 import 'bootstrap/dist/css/bootstrap.css';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons'
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 export default function FormPage() {
     const [name, setName] = useState('')
@@ -35,12 +38,14 @@ export default function FormPage() {
                     {
                         (props) => (
                             <Form className="w-11/12 m-auto text-[18px] text-[#45534A] mt-3">
-                                <fieldset className="border border-[#45534A] rounded-xl">
-                                    <Field className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500" type="text" name="name" placeholder="Email Address" required/>
+                                <fieldset className="border border-[#45534A] rounded-xl flex">
+                                    <FontAwesomeIcon icon={faEnvelope} className="p-3 text-2xl"/>
+                                    <Field className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="text" name="name" placeholder="Email Address" required/>
                                 </fieldset>
 
-                                <fieldset className="border border-[#45534A] rounded-xl mt-2">
-                                    <Field className=" h-[55px] text-[#45534A] w-full outline-1 outline-gray-500" type="password" name="password" placeholder="Password" required/>
+                                <fieldset className="border border-[#45534A] rounded-xl mt-2 flex">
+                                    <FontAwesomeIcon icon={faLock} className="p-3 text-2xl"/>
+                                    <Field className=" h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="password" name="password" placeholder="Password" required/>
                                 </fieldset>
 
                                 <div className="text-[16px] text-end text-[#45534A] pt-1">
@@ -58,6 +63,21 @@ export default function FormPage() {
 
             <div className="text-center text-[#45534A] mt-4">
                 Don't have an account? <Link to={"/register"} className=" no-underline text-[#AC1A0F]">Sign Up</Link>
+            </div>
+
+            <div className="flex w-11/12 m-auto pt-2">
+                <hr className="w-2/4"/>
+                <p className="p-1 text-[16px]">Or</p>
+                <hr className="w-2/4"/>
+            </div>
+
+            <div className="flex justify-center">
+                <button className="text-[#090A0A] text-[16px] flex border w-11/12 rounded-full h-[50px] items-center">
+                    <span className="w-1/4 pl-4">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" className="w-[20px]"/>
+                    </span>
+                    <span className="pl-4 font-semibold">Continue with google</span>
+                </button>
             </div>
         </div>
     )
