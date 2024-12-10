@@ -37,7 +37,7 @@ export default function FormPage() {
                 >
                     {
                         (props) => (
-                            <Form className="w-11/12 m-auto text-[18px] text-[#45534A] mt-3">
+                            <Form className="w-11/12 md:w-4/12 m-auto text-[18px] text-[#45534A] mt-3">
                                 <fieldset className="border border-[#45534A] rounded-xl flex">
                                     <FontAwesomeIcon icon={faEnvelope} className="p-3 text-2xl"/>
                                     <Field className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="text" name="name" placeholder="Email Address" required/>
@@ -72,11 +72,11 @@ export default function FormPage() {
             </div>
 
             <div className="flex justify-center">
-                <button className="text-[#090A0A] text-[16px] flex border w-11/12 rounded-full h-[50px] items-center">
+                <button className="text-[#090A0A] text-[16px] flex border w-11/12 md:w-4/12 rounded-full h-[50px] items-center">
                     <span className="w-1/4 pl-4">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png" className="w-[20px]"/>
                     </span>
-                    <span className="pl-4 font-semibold">Continue with google</span>
+                    <span className="pl-4 md:text-center md:w-full md:mr-28 font-semibold">Continue with google</span>
                 </button>
             </div>
         </div>
