@@ -19,7 +19,7 @@ export default function FormPage() {
     return (
         <div>
             <div>
-                <img src="/images/Logo/logo.png" alt="logo" className="m-auto w-[90px] mt-5"/>
+                <img src="/images/Logo/logo.png" alt="logo" className="m-auto w-[90px] mt-5 md:mt-2"/>
             </div>
 
             <div className="text-center pt-3">
@@ -53,7 +53,7 @@ export default function FormPage() {
                                 </div>
 
                                 <div className="text-center w-full pt-8">
-                                    <button className=" bg-[#1D8F34] text-white text-[24px] w-full h-[60px] rounded-full" type="submit">Login</button>
+                                    <button className=" bg-[#1D8F34] text-white text-[24px] w-full h-[60px] md:h-[50px] rounded-full" type="submit">Login</button>
                                 </div>
                             </Form>
                         )
