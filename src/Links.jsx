@@ -4,6 +4,8 @@ import Sign from "./components/Register/Sign";
 import Basicmap from "./components/Basicmap";
 import Landing from "./components/LandingPage/Landing";
 import AuthProvider, { useAuth } from "./components/security/AuthContext";
+import { Provider } from "react-redux";
+import Store from "./components/security/Store";
 
 export default function Links(){
 
@@ -11,7 +13,8 @@ export default function Links(){
 
     return (
         <div>
-            <AuthProvider>
+            {/* <AuthProvider> */}
+            <Provider store={Store}>
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Landing />} />
@@ -20,7 +23,8 @@ export default function Links(){
                         <Route path="/map" element={<Basicmap/>}/>
                     </Routes>
                 </BrowserRouter>
-            </AuthProvider>
+            </Provider>
+            {/* </AuthProvider> */}
         </div>
     )
 }

@@ -4,21 +4,32 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons'
+import { signup } from "../api/ApiService";
 
 export default function SignBack() {
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('')
     const navigate = useNavigate()
 
-    function onSubmit(values) {
-        console.log(values)
-        navigate('/map')
+    async function onSubmit(values) {
+        const passenger = {
+            passenger_name: values.name,
+            email: values.email,
+            password: values.password
+        }
+        try{
+            const response = await signup(passenger)
+            console.log(response)
+        } catch(error){
+            console.log(error)
+        }
     }
 
     return (
         <div>
             <div>
-                <img src="/images/Logo/logo.png" alt="logo" className="m-auto w-[90px] mt-5"/>
+                <img src="x/images/Logo/logo.png" alt="logo" className="m-auto w-[90px] mt-5"/>
             </div>
 
             <div className="text-center pt-3">
@@ -30,7 +41,7 @@ export default function SignBack() {
             
             <div className="pt-2">
                 <Formik
-                initialValues={{name, password}}
+                initialValues={{name, password, email}}
                 enableReinitialize={true}
                 onSubmit={onSubmit}
                 >
@@ -40,12 +51,12 @@ export default function SignBack() {
 
                                 <fieldset className="border border-[#45534A] rounded-xl mt-2 flex">
                                     <FontAwesomeIcon icon={faUser} className="p-3 text-2xl"/>
-                                    <Field className=" h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="password" name="fullname" placeholder="Full Name" required/>
+                                    <Field className=" h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="text" name="name" placeholder="Full Name" required/>
                                 </fieldset>
 
                                 <fieldset className="border border-[#45534A] rounded-xl flex mt-2">
                                     <FontAwesomeIcon icon={faEnvelope} className="p-3 text-2xl"/>
-                                    <Field className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="text" name="name" placeholder="Email Address" required/>
+                                    <Field className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="email" name="email" placeholder="Email Address" required/>
                                 </fieldset>
 
                                 <fieldset className="border border-[#45534A] rounded-xl mt-2 flex">

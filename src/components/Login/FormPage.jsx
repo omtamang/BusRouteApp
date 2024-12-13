@@ -5,15 +5,26 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { authenticate } from "../api/ApiService";
 
 export default function FormPage() {
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
     const navigate = useNavigate()
 
-    function onSubmit(values) {
-        console.log(values)
-        navigate('/map')
+    async function onSubmit(values) {
+
+        const payload = {
+            email: values.name,
+            password: values.password
+        }
+
+        try{
+            const response = await authenticate(payload)
+            console.log(response)
+        } catch(error){
+            console.log(error)
+        }
     }
 
     return (
