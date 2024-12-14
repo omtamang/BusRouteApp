@@ -21,6 +21,7 @@ export default function SignBack() {
         try{
             const response = await signup(passenger)
             console.log(response)
+            navigate('/login')
         } catch(error){
             console.log(error)
         }

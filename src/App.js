@@ -1,11 +1,12 @@
 import './App.css';
-import Links from './Links';
+import AuthProvider from './components/security/AuthProvider';
+import Routes from './components/routes';
 
 function App() {
   return (
-    <div className="App">
-      <Links/>
-    </div>
+    <AuthProvider>
+      <Routes/>
+    </AuthProvider>
   );
 }
 
