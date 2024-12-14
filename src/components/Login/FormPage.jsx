@@ -75,7 +75,7 @@ export default function FormPage() {
             </div>
 
             <div className="text-center text-[#45534A] mt-4">
-                Don't have an account? <Link to={"/register"} className=" no-underline text-[#AC1A0F]">Sign Up</Link>
+                Don't have an account? <Link to={"/signup"} className=" no-underline text-[#AC1A0F]">Sign Up</Link>
             </div>
 
             <div className="flex w-11/12 m-auto pt-2">

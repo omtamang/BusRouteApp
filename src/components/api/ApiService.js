@@ -4,4 +4,4 @@ export const getPassenger = (email) => axios.get(`http://localhost:8080/passenge
 
 export const authenticate = (userLogin) => axios.post("http://localhost:8080/token", userLogin)
 
-export const signup = (passenger) => axios.post("http://localhost:8080/passenger", passenger);
+export const signup = (passenger) => axios.post("http://localhost:8080/passenger/signup", passenger);

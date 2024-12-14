@@ -10,6 +10,7 @@ export default function SignBack() {
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
+    const [userExist, setExist] = useState(false)
     const navigate = useNavigate()
 
     async function onSubmit(values) {
@@ -20,9 +21,9 @@ export default function SignBack() {
         }
         try{
             const response = await signup(passenger)
-            console.log(response)
             navigate('/login')
         } catch(error){
+            error.status = 400 ? setExist(true) : setExist(false)
             console.log(error)
         }
     }
@@ -30,7 +31,7 @@ export default function SignBack() {
     return (
         <div>
             <div>
-                <img src="x/images/Logo/logo.png" alt="logo" className="m-auto w-[90px] mt-5"/>
+                <img src="/images/Logo/logo.png" alt="logo" className="m-auto w-[90px] mt-5"/>
             </div>
 
             <div className="text-center pt-3">
@@ -59,6 +60,11 @@ export default function SignBack() {
                                     <FontAwesomeIcon icon={faEnvelope} className="p-3 text-2xl"/>
                                     <Field className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2" type="email" name="email" placeholder="Email Address" required/>
                                 </fieldset>
+                                
+                                 {/* if user exists show message */}
+                                 {userExist && <div>
+                                        <p className="text-red-500 text-[16px]">Email already exist</p>
+                                    </div>}
 
                                 <fieldset className="border border-[#45534A] rounded-xl mt-2 flex">
                                     <FontAwesomeIcon icon={faLock} className="p-3 text-2xl"/>
