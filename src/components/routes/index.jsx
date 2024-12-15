@@ -14,6 +14,10 @@ const Routes = () => {
         {
           path: "/",
           element: <Landing/>,
+        },
+        {
+          path: "/map",
+          element: <Basicmap/>,
         }
       ];
 
