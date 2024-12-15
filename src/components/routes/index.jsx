@@ -6,6 +6,7 @@ import Basicmap from "../Basicmap";
 import Sign from "../Register/Sign";
 import Login from "../Login/Login";
 import Logout from "../Logout/Logout";
+import Profile from "../ProfileAndSettings/Profile";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -18,7 +19,11 @@ const Routes = () => {
         {
           path: "/map",
           element: <Basicmap/>,
-        }
+        },
+        {
+          path: "/profile",
+          element: <Profile/>,
+        },
       ];
 
       const routesForAuthenticatedOnly = [
