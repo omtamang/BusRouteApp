@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faBell, faIdCard, faRightFromBracket, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faBell, faIdCard, faRightFromBracket, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import Logout from "../Logout/Logout";
 
 export default function Profile(){
     return(
@@ -30,9 +31,9 @@ export default function Profile(){
                 </div>
 
                 <div className="flex m-auto pl-6 pt-4">
-                    <section>
-                        <FontAwesomeIcon icon={faRightFromBracket} className="text-slate-600 text-xl"/>
-                        <span className="pl-4">Logout</span>
+                    <section className="flex">
+                        <FontAwesomeIcon icon={faRightFromBracket} className="text-slate-600 text-xl pt-1"/>
+                        <Logout/>
                     </section>
                 </div>
 

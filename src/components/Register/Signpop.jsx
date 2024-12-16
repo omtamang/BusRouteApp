@@ -1,18 +1,8 @@
 import React from 'react';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
-import { useAuth } from "../security/AuthProvider"
-import { useNavigate } from "react-router-dom"
 
-export default function Logout() {
-
-    const {setToken} = useAuth()
-    const navigate = useNavigate()
-
-    async function handlelogout() {
-        await setToken();
-        navigate('/login');
-    }
+export default function Signpop() {
 
     return (
         <div className="pl-4 w-[200px]">

@@ -13,16 +13,8 @@ const Routes = () => {
 
     const routesForPublic = [
         {
-          path: "/",
+          path: "/landing",
           element: <Landing/>,
-        },
-        {
-          path: "/map",
-          element: <Basicmap/>,
-        },
-        {
-          path: "/profile",
-          element: <Profile/>,
         },
       ];
 
@@ -36,16 +28,12 @@ const Routes = () => {
               element: <Basicmap/>,
             },
             {
-                path: "/signup",
-                element: <Sign/>,
-            },
-            {
-                path: "/login",
-                element: <Login/>,
-            },
-            {
                 path: "/logout",
                 element: <Logout/>,
+            },
+            {
+                path: "/profile",
+                element: <Profile/>,
             }
           ],
         },
