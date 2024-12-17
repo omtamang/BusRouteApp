@@ -12,7 +12,7 @@ export default function Basicmap() {
   window.onload = getLocation();
 
   function getLocation() {
-    console.log("button clicked");
+    //console.log("button clicked");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
     } else {
