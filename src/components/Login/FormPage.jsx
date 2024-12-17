@@ -60,10 +60,12 @@ export default function FormPage() {
                 >
                     {(props) => (
                         <Form className="w-11/12 md:w-4/12 m-auto text-[18px] text-[#45534A] mt-3">
-                            {invalid && <div className="text-center bg-red-200 border-[2px] border-red-600">
+
+                            {invalid && <div className="text-center bg-red-200 border-[2px] border-red-600 mb-2">
                                 <h4 className="pt-3">Wrong Credentials</h4>
-                                <p>Invalid User or Password</p>
+                                <p className="">Invalid User or Password</p>
                             </div>}
+
                             <fieldset className="border border-[#45534A] rounded-xl flex">
                                 <FontAwesomeIcon icon={faEnvelope} className="p-3 text-2xl" />
                                 <Field

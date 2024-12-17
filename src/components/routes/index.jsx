@@ -13,7 +13,7 @@ const Routes = () => {
 
     const routesForPublic = [
         {
-          path: "/landing",
+          path: "/",
           element: <Landing/>,
         },
       ];
