@@ -25,7 +25,7 @@ export default function FormPage() {
         try {
             const response = await authenticate(payload);
 
-            if(response.status == 200){
+            if(response.status === 200){
                 setInvalid(false);
                 setToken(response.data);
             }

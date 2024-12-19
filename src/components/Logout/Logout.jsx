@@ -30,7 +30,7 @@ export default function Logout() {
                                 <button onClick={() => close()} className="text-[#1D8F34]">
                                         Cancel
                                 </button>
-                                <button onClick={handlelogout} className="text-red-600">
+                                <button onClick={handlelogout} className="text-[#be3939]">
                                         Log out
                                 </button>
                             </div>

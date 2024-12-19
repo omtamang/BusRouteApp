@@ -16,6 +16,10 @@ const Routes = () => {
           path: "/",
           element: <Landing/>,
         },
+        {
+            path: "/profile",
+            element: <Profile/>,
+        }
       ];
 
       const routesForAuthenticatedOnly = [
