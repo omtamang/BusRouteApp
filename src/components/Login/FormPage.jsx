@@ -6,12 +6,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 import { authenticate } from "../api/ApiService";
 import { useAuth } from "../security/AuthProvider";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function FormPage() {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [invalid, setInvalid] = useState(false); // Loading state for animation
+    const [capVal, setcapVal] = useState(null);
+
     const navigate = useNavigate();
     const { setToken } = useAuth();
 
@@ -96,10 +99,17 @@ export default function FormPage() {
                                 Forgot password?
                             </div>
 
+                            <ReCAPTCHA
+                                    sitekey="6LcZsKQqAAAAAPogApc4scGVCMoaeAglBDWB31nE"
+                                    onChange={(val) => setcapVal(val)}
+                                    className="pt-3"
+                                />
+
                             <div className="text-center w-full pt-8">
                                 <button
                                     className=" bg-[#1D8F34] text-white text-[24px] w-full h-[60px] md:h-[50px] rounded-full"
                                     type="submit"
+                                    disabled={!capVal}
                                 >
                                     {loading && <div className="flex items-center justify-center">
                                         <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-white-600 border-opacity-75"></div>

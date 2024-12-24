@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { signup } from "../api/ApiService";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function SignBack() {
     const [name, setName] = useState('');
@@ -12,6 +13,7 @@ export default function SignBack() {
     const [email, setEmail] = useState('');
     const [userExist, setExist] = useState(false);
     const [showPopup, setShowPopup] = useState(false); // To handle popup visibility
+    const [capVal, setcapVal] = useState(null);
     const navigate = useNavigate();
 
     async function onSubmit(values) {
@@ -108,10 +110,17 @@ export default function SignBack() {
                                     Password must be 8 characters
                                 </div>
 
+                                <ReCAPTCHA
+                                    sitekey="6LcZsKQqAAAAAPogApc4scGVCMoaeAglBDWB31nE"
+                                    onChange={(val) => setcapVal(val)}
+                                    className="pt-3"
+                                />
+
                                 <div className="text-center w-full pt-8">
                                     <button
                                         className=" bg-[#1D8F34] text-white text-[24px] w-full h-[60px] rounded-full"
                                         type="submit"
+                                        disabled={!capVal}
                                     >
                                         Sign Up
                                     </button>
