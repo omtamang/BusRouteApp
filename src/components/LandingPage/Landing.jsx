@@ -10,9 +10,9 @@ export default function Landing() {
              navigate('/map')
         }
         else{
-            navigate('/login')
+            navigate('/signup')
         }
-    }
+    } 
 
     return (
         <div className="text-center">

@@ -7,6 +7,7 @@ import Sign from "../Register/Sign";
 import Login from "../Login/Login";
 import Logout from "../Logout/Logout";
 import Profile from "../ProfileAndSettings/Profile";
+import GoogleLoginHandling from "../GoogleLoginHandling/GoogleLoginHandling";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -17,9 +18,9 @@ const Routes = () => {
           element: <Landing/>,
         },
         {
-            path: "/profile",
-            element: <Profile/>,
-        }
+          path: "/google/handling/:email",
+          element: <GoogleLoginHandling/>,
+        },
       ];
 
       const routesForAuthenticatedOnly = [

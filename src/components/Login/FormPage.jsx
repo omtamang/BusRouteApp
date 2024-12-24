@@ -39,6 +39,10 @@ export default function FormPage() {
         }
     }
 
+    const googleLogin = () => {
+        window.location.href = "http://localhost:8080/oauth2/authorization/google"
+    }
+
     return (
         <div>
             <div>
@@ -121,7 +125,7 @@ export default function FormPage() {
                 <hr className="w-2/4" />
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center" onClick={googleLogin}>
                 <button className="text-[#090A0A] text-[16px] flex border w-11/12 md:w-4/12 rounded-full h-[50px] items-center">
                     <span className="w-1/4 pl-4">
                         <img
@@ -130,9 +134,7 @@ export default function FormPage() {
                             alt="Google Icon"
                         />
                     </span>
-                    <span className="pl-4 md:text-center md:w-full md:mr-28 font-semibold">
-                        Continue with Google
-                    </span>
+                    <span className="pl-4 md:text-center md:w-full md:mr-28 font-semibold">Continue with Google</span>
                 </button>
             </div>
         </div>

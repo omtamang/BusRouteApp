@@ -73,16 +73,16 @@ export default function Profile() {
 
             <div className="mt-8 text-xl">
                 {/* Div for user name and profile */}
-                <div className="flex justify-evenly">
+                <div className="flex-col justify-evenly">
                     <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvetk9tOwHkQMwe1DfoxempOXosaikcVL5QQ&s"
                         alt="User"
-                        className="rounded-full w-1/4"
+                        className="rounded-full w-24 m-auto"
                     />
-                    <p className="pt-7"><b>User:</b> {user}</p>
+                    <p className="pt-7 text-center"> <b className="text-wrap">{user}</b></p>
                 </div>
 
-                <div className=" space-x-24 flex m-auto pl-6 pt-11">
+                <div className=" space-x-24 flex m-auto pl-6 pt-6">
                     <section>
                         <FontAwesomeIcon icon={faIdCard} className="text-slate-600 text-xl" />
                         <span className="pl-4">Account Information</span>
