@@ -14,6 +14,7 @@ export default function SignBack() {
     const [userExist, setExist] = useState(false);
     const [showPopup, setShowPopup] = useState(false); // To handle popup visibility
     const [capVal, setcapVal] = useState(null);
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
     async function onSubmit(values) {
@@ -22,6 +23,7 @@ export default function SignBack() {
             email: values.email,
             password: values.password
         };
+        setLoading(true)
         try {
             const response = await signup(passenger);
 
@@ -29,12 +31,13 @@ export default function SignBack() {
                 setShowPopup(true); // Show the popup
                 setTimeout(() => {
                     setShowPopup(false); // Hide the popup after 3 seconds
-                    navigate('/login'); // Navigate to login page
+                    navigate('/verification/' + values.email); // Navigate to login page
                 }, 3000);
             }
         } catch (error) {
             if (error.response?.status === 400) {
                 setExist(true);
+                setLoading(false);
             } else {
                 console.log(error);
             }
@@ -70,7 +73,7 @@ export default function SignBack() {
                                 <fieldset className="border border-[#45534A] rounded-xl mt-2 flex">
                                     <FontAwesomeIcon icon={faUser} className="p-3 text-2xl" />
                                     <Field
-                                        className=" h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2"
+                                        className=" h-[55px] text-[#45534A] w-full outline-none pl-2"
                                         type="text"
                                         name="name"
                                         placeholder="Full Name"
@@ -81,7 +84,7 @@ export default function SignBack() {
                                 <fieldset className="border border-[#45534A] rounded-xl flex mt-2">
                                     <FontAwesomeIcon icon={faEnvelope} className="p-3 text-2xl" />
                                     <Field
-                                        className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2"
+                                        className="h-[55px] text-[#45534A] w-full outline-none pl-2"
                                         type="email"
                                         name="email"
                                         placeholder="Email Address"
@@ -98,7 +101,7 @@ export default function SignBack() {
                                 <fieldset className="border border-[#45534A] rounded-xl mt-2 flex">
                                     <FontAwesomeIcon icon={faLock} className="p-3 text-2xl" />
                                     <Field
-                                        className=" h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2"
+                                        className=" h-[55px] text-[#45534A] w-full outline-none pl-2"
                                         type="password"
                                         name="password"
                                         placeholder="Password"
@@ -113,7 +116,7 @@ export default function SignBack() {
                                 <ReCAPTCHA
                                     sitekey="6LcZsKQqAAAAAPogApc4scGVCMoaeAglBDWB31nE"
                                     onChange={(val) => setcapVal(val)}
-                                    className="pt-3"
+                                    className="pt-3 flex justify-center"
                                 />
 
                                 <div className="text-center w-full pt-8">
@@ -122,7 +125,10 @@ export default function SignBack() {
                                         type="submit"
                                         disabled={!capVal}
                                     >
-                                        Sign Up
+                                    {loading && <div className="flex items-center justify-center">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-white-600 border-opacity-75"></div>
+                                    </div>}
+                                       {!loading && <div> Sign Up</div>}
                                     </button>
                                 </div>
                             </Form>
@@ -135,11 +141,11 @@ export default function SignBack() {
             {showPopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-6 rounded-lg w-[300px] text-center">
-                        <h2 className="text-lg font-bold mb-4 text-green-600">Signup Successful!</h2>
+                        <h2 className="text-lg font-bold mb-4 text-green-600">Details Recieved!</h2>
                         <div className="flex items-center justify-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-green-600 border-opacity-75 mb-4"></div>
                         </div>
-                        <p className="text-gray-700">Redirecting to login...</p>
+                        <p className="text-gray-700">Please verify your email...</p>
                     </div>
                 </div>
             )}

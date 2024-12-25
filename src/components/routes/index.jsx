@@ -8,6 +8,8 @@ import Login from "../Login/Login";
 import Logout from "../Logout/Logout";
 import Profile from "../ProfileAndSettings/Profile";
 import GoogleLoginHandling from "../GoogleLoginHandling/GoogleLoginHandling";
+import ValidationCodeForm from "../ValidationCodeForm/ValidationCodeForm";
+import EmailVerificationPage from "../ValidationCodeForm/EmailVerificationPage";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -48,6 +50,14 @@ const Routes = () => {
         {
           path: "/signup",
           element: <Sign/>,
+        },
+        {
+          path: "/verification/:email",
+          element: <ValidationCodeForm/>
+        },
+        {
+          path: "/login/verification",
+          element: <EmailVerificationPage/>
         },
         {
           path: "/login",

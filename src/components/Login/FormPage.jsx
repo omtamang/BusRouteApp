@@ -14,9 +14,14 @@ export default function FormPage() {
     const [loading, setLoading] = useState(false);
     const [invalid, setInvalid] = useState(false); // Loading state for animation
     const [capVal, setcapVal] = useState(null);
+    const [verified, setVerified] = useState(true);
 
     const navigate = useNavigate();
     const { setToken } = useAuth();
+
+    function verifyAccount(){
+        navigate('/login/verification')
+    }
 
     async function onSubmit(values) {
         const payload = {
@@ -33,11 +38,18 @@ export default function FormPage() {
                 setToken(response.data);
             }
 
-            navigate('/map',); // Redirect after 3 seconds
+            navigate('/map',);
             
         } catch (error) {
-            console.log(error);
-            setInvalid(true);
+            console.log(error.code)
+            if(error.status == 406){
+                setVerified(false);
+                setInvalid(false);
+            }
+            if(error.code == "ERR_NETWORK"){
+                setInvalid(true);
+                setVerified(true);
+            }
             setLoading(false); // Stop loading animation on error
         }
     }
@@ -73,10 +85,15 @@ export default function FormPage() {
                                 <p className="">Invalid User or Password</p>
                             </div>}
 
+                            {!verified && <div className="text-center bg-red-200 border-[2px] border-red-600 ">
+                                <h4 className="pt-3">Email not verified</h4>
+                                <button className="text-blue-500 underline pb-2" onClick={verifyAccount}>Verify</button>
+                            </div>}
+
                             <fieldset className="border border-[#45534A] rounded-xl flex">
                                 <FontAwesomeIcon icon={faEnvelope} className="p-3 text-2xl" />
                                 <Field
-                                    className="h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2"
+                                    className="h-[55px] text-[#45534A] w-full outline-none  pl-2"
                                     type="text"
                                     name="name"
                                     placeholder="Email Address"
@@ -87,7 +104,7 @@ export default function FormPage() {
                             <fieldset className="border border-[#45534A] rounded-xl mt-2 flex">
                                 <FontAwesomeIcon icon={faLock} className="p-3 text-2xl" />
                                 <Field
-                                    className=" h-[55px] text-[#45534A] w-full outline-1 outline-gray-500 pl-2"
+                                    className=" h-[55px] text-[#45534A] w-full outline-none pl-2"
                                     type="password"
                                     name="password"
                                     placeholder="Password"
@@ -102,7 +119,7 @@ export default function FormPage() {
                             <ReCAPTCHA
                                     sitekey="6LcZsKQqAAAAAPogApc4scGVCMoaeAglBDWB31nE"
                                     onChange={(val) => setcapVal(val)}
-                                    className="pt-3"
+                                    className="pt-3 flex justify-center"
                                 />
 
                             <div className="text-center w-full pt-8">

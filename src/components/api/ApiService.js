@@ -7,3 +7,5 @@ export const authenticate = (userLogin) => axios.post("http://localhost:8080/tok
 export const signup = (passenger) => axios.post("http://localhost:8080/passenger/signup", passenger);
 
 export const deleteEmail = () => axios.delete("http://localhost:8080/passenger/delete");
+
+export const verifyEmail = (details) => axios.post("http://localhost:8080/verify/code", details);
