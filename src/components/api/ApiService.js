@@ -9,3 +9,5 @@ export const signup = (passenger) => axios.post("http://localhost:8080/passenger
 export const deleteEmail = () => axios.delete("http://localhost:8080/passenger/delete");
 
 export const verifyEmail = (details) => axios.post("http://localhost:8080/verify/code", details);
+
+export const resendEmail = (email) => axios.get(`http://localhost:8080/send/code/${email}`);

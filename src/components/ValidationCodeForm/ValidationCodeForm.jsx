@@ -1,12 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { useNavigate, useParams } from 'react-router-dom';
 import { verifyEmail } from '../api/ApiService';
 
 const ValidationCodeForm = () => {
   const [errors, setErrors] = useState({});
+  const [wrongcode, setWrongCode] = useState(false);
+  const [timer, setTimer] = useState(60); // Timer state
+  const [codeExpired, setCodeExpired] = useState(false); // To track code expiration
+
   const { email } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (timer > 0 && !codeExpired) {
+      const countdown = setInterval(() => {
+        setTimer((prevTime) => prevTime - 1);
+      }, 1000);
+      return () => clearInterval(countdown); // Cleanup interval on component unmount or when timer expires
+    } else if (timer === 0) {
+      setCodeExpired(true); // Mark code as expired after 1 minute
+    }
+  }, [timer, codeExpired]);
 
   const validateCode = (code) => {
     const errors = {};
@@ -31,6 +46,9 @@ const ValidationCodeForm = () => {
       }
     } catch (error) {
       console.log(error);
+      if (error.status === 400) {
+        setWrongCode(true);
+      }
     }
   }
 
@@ -50,7 +68,7 @@ const ValidationCodeForm = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-10/12 max-w-md mx-auto p-6 border border-gray-300 rounded-lg bg-gray-50 text-center shadow-md">
+      <div className="w-11/12 max-w-md mx-auto p-6 border border-gray-300 rounded-lg bg-gray-50 text-center shadow-md">
         <h2 className="text-2xl font-semibold mb-4">
           Verification Code sent to: <b>{email}</b>
         </h2>
@@ -78,10 +96,29 @@ const ValidationCodeForm = () => {
                 {errors.code && touched.code && (
                   <div className="text-red-500 text-sm mt-2">{errors.code}</div>
                 )}
+
+                {wrongcode && (
+                  <div>
+                    <p className="text-red-500 text-sm mt-2">Wrong code</p>
+                  </div>
+                )}
               </div>
+
+              {/* Timer display */}
+              <div className="text-sm mt-2">
+                {codeExpired ? (
+                  <p className="text-red-500">Code expired</p>
+                ) : (
+                  <p>
+                    Code expires in : {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, '0')}
+                  </p>
+                )}
+              </div>
+
               <button
                 type="submit"
                 className="w-full py-3 bg-[#1D8F34] text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                disabled={codeExpired} // Disable submit if code is expired
               >
                 Verify
               </button>

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { useNavigate } from 'react-router-dom';
+import { resendEmail } from '../api/ApiService';
 
 const EmailVerificationPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (value) => {
     let error;
@@ -17,9 +19,21 @@ const EmailVerificationPage = () => {
     return error;
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     console.log('Email submitted for verification:', values.email);
-    navigate('/verification/' + values.email);
+    setLoading(true);
+    try {
+
+      const response = await resendEmail(values.email);
+      if(response.status === 201){
+        navigate('/verification/' + values.email);
+      }
+
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+    
   };
 
   const handleBack = () => {
@@ -62,7 +76,12 @@ const EmailVerificationPage = () => {
                 type="submit"
                 className="w-full bg-[#1D8F34] text-white px-4 py-2 rounded hover:bg-green-700 focus:outline-none"
               >
-                Verify Email
+                {loading && <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-white-600 border-opacity-75"></div>
+                  </div>}
+                  {!loading && <div>
+                    Verify Email
+                  </div>}
               </button>
               <button
                 type="button"
