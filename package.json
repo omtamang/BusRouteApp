@@ -31,12 +31,11 @@
     "react-leaflet": "^4.2.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.28.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "reactjs-popup": "^2.0.6",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.6.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -64,6 +63,7 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.13"
+    "tailwindcss": "^3.4.13",
+    "typescript": "^4.9.5"
   }
 }
