@@ -22,7 +22,7 @@ const Routes = () => {
         {
           path: "/google/handling/:email",
           element: <GoogleLoginHandling/>,
-        },
+        }
       ];
 
       const routesForAuthenticatedOnly = [
