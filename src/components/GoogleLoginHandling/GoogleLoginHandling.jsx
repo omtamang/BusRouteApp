@@ -12,7 +12,7 @@ export default function GoogleLoginHandling(){
     function googleHandle() {
         setTimeout(() => {
             setToken(email)
-            navigate('/map');
+            navigate('/bus-route');
         }, 3000);
     }
 

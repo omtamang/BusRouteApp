@@ -38,7 +38,7 @@ export default function FormPage() {
                 setToken(response.data);
             }
 
-            navigate('/map',);
+            navigate('/bus-route',);
             
         } catch (error) {
             console.log(error.code)
