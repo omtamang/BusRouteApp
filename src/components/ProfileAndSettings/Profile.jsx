@@ -71,7 +71,7 @@ export default function Profile() {
                 <span className="text-xl pl-4 text-black">Profile and settings</span>
             </div>
 
-            <div className="mt-8 text-xl">
+            <div className="mt-8 text-xl md:max-w-96 md:m-auto">
                 {/* Div for user name and profile */}
                 <div className="flex-col justify-evenly">
                     <img

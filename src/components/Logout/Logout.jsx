@@ -15,13 +15,13 @@ export default function Logout() {
     }
 
     return (
-        <div className="pl-4 w-[200px]">
+        <div className="pl-4">
             <Popup trigger=
                 {<button className=""> Logout </button>} 
                 modal nested>
                 {
                     close => (
-                        <div className='block text-lg'>
+                        <div className='block text-lg md:max-w-96 text-center'>
                             <div>
                                 Do you want to log out?
                             </div>

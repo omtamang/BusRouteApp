@@ -20,7 +20,7 @@ export default function GoogleLoginHandling(){
         googleHandle()
     })
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-700 text-white z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-[#1D8F34] text-white z-50">
         <div className="flex flex-col items-center space-y-6">
           {/* Rotating globe animation */}
           <div className="relative w-24 h-24">
