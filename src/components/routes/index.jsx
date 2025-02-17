@@ -32,7 +32,7 @@ const Routes = () => {
           element: <ProtectedRoute/>,
           children: [
             {
-              path: "/map",
+              path: "/map/:routeId",
               element: <Basicmap/>,
             },
             {

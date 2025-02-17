@@ -7,7 +7,7 @@ export default function Landing() {
 
     function route(){
         if(token){
-             navigate('/map')
+             navigate('/bus-route')
         }
         else{
             navigate('/signup')

@@ -1,106 +1,91 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { getRoutes } from "../api/ApiService"
 
-const BusIcon = ({ className }) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M8 6v6" />
-      <path d="M15 6v6" />
-      <path d="M2 12h19.6" />
-      <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" />
-      <circle cx="7" cy="18" r="2" />
-      <circle cx="17" cy="18" r="2" />
-    </svg>
-  )
-  
-  const NavigationIcon = ({ className }) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="12 2 19 21 12 17 5 21 12 2" />
-    </svg>
-  )
-  
-export default function Busroute() {
-  const navigate = useNavigate();
+const RouteIcon = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="4" cy="12" r="2" />
+    <circle cx="20" cy="12" r="2" />
+    <path d="M4 12h2c2 0 5-2 7-2s5 2 7 2h2" />
+  </svg>
+)
 
-    const busRoutes = [
-      {
-        id: "1",
-        busNumber: "8288",
-        nextStop: "Gokarna",
-        arrivalTime: "2 minutes",
-        speed: 40,
-        isActive: true,
-      },
-      {
-        id: "2",
-        busNumber: "9588",
-        nextStop: "Medical College",
-        arrivalTime: "10 minutes",
-        speed: 10,
-        isActive: true,
-      }
-    ]
+export default function BusRoutes() {
+  const [routes, setRoutes] = useState([]);
+  const [isActive, setisActive] = useState(true);
 
-    function getRoute(){
-      navigate('/map');
+  const navigate = useNavigate()
+
+  async function getRoute() {
+    try {
+      const response = await getRoutes();
+      setRoutes(response.data);
+    } catch (error) {
+      console.log(error);
     }
+  }
 
-    return (
-      <div className="min-h-screen bg-gray-100">
-        <div className="max-w-md mx-auto">
-          <div className="bg-green-500 text-white p-4 rounded-b-lg shadow-lg">
-            <div className="flex items-center gap-2 mb-1 pt-8">
-              <BusIcon className="h-5 w-5" />
-              <h1 className="text-lg font-semibold">Nearest Bus route's buses</h1>
-            </div>
-            <div className="text-sm">{busRoutes.length} buses</div>
+  useEffect(() => {
+     getRoute();
+  }, [])
+
+  function getRouteDetails(routeId) {
+    navigate(`/map/${routeId}`)
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-md mx-auto">
+        <div className="bg-green-500 text-white p-4 rounded-b-lg shadow-lg">
+          <div className="flex items-center gap-2 mb-1 pt-8">
+            <RouteIcon className="h-6 w-6" />
+            <h1 className="text-lg font-semibold">Bus Routes Information</h1>
           </div>
-  
-          <div className="h-[calc(100vh-100px)] overflow-y-auto">
-            <div className="p-4 space-y-3">
-              {busRoutes.map((route) => (
-                <div key={route.id} className="bg-white p-3 rounded-lg shadow-sm" onClick={getRoute}>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <BusIcon className={`h-5 w-5 ${route.isActive ? "text-green-500" : "text-gray-400"}`} />
-                        <span className="font-semibold">Bus {route.busNumber}</span>
-                      </div>
-                      <div className="text-sm text-gray-600">Next Stop: {route.nextStop}</div>
-                      <div className="text-sm">Arrival Time: {route.arrivalTime}</div>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                      <NavigationIcon className="h-4 w-4" />
-                      {route.speed} km/hr
-                    </div>
+          <div className="text-sm">{routes.length} routes available</div>
+        </div>
+
+        <div className="p-4 space-y-4">
+          {routes.map((route) => (
+            <div
+              key={route.route_id}
+              className="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => getRouteDetails(route.route_id)}
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <RouteIcon className={`h-6 w-6 ${isActive ? "text-green-500" : "text-gray-400"}`} />
+                    <span className="font-semibold text-lg">{route.route_name}</span>
                   </div>
+                  <span
+                    className={`text-sm font-medium py-1 px-2 rounded-full ${
+                      isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {route.isActive ? "Active" : "Inactive"}
+                  </span>
                 </div>
-              ))}
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <div className="text-sm text-gray-600">Fare: 30-50</div>
+                  <div>No. of buses: {route.no_of_buses}</div>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-    )
-  }
-  
+    </div>
+  )
+}
+
