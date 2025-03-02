@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBus, faCircleStop, faLocationCrosshairs } from "@fortawesome/free-solid-svg-icons"
 import { Link, useParams } from "react-router-dom"
-import { getRouteByid } from "./api/ApiService"
+import { getRouteByid, getStopByRouteId } from "./api/ApiService"
 
 // Constants
 const DEFAULT_CENTER = { lat: 27.7172, lon: 85.324 } // Kathmandu
@@ -33,13 +33,18 @@ function RoutingMachine() {
   const map = useMap()
   const [routeCoordinates, setRouteCoordinates] = useState([])
   const [route, setRoute] = useState(null)
+  const [stop, setStop] = useState(null)
   const { routeId } = useParams()
 
   useEffect(() => {
     async function fetchRouteData() {
       try {
         const response = await getRouteByid(routeId)
+        const res = await getStopByRouteId(routeId)
+        console.log(res)
         setRoute(response.data)
+        setStop(res.data)
+        console.log(stop)
       } catch (error) {
         console.error("Error fetching route:", error)
       }
@@ -134,9 +139,11 @@ export default function BasicMap() {
     }
   }, [userLocation])
 
+  const { routeId } = useParams()
+
   return (
     <div className="relative w-full h-screen">
-      <Link to="/profile">
+      <Link to={`/profile/${routeId}`}>
         <div className="w-14 text-center h-14 absolute top-20 left-5 z-50 flex items-center justify-center">
           <img
             src={process.env.PUBLIC_URL + "/images/Logo/profile.png" || "/placeholder.svg"}

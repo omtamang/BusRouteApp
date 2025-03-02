@@ -44,7 +44,7 @@ const Routes = () => {
                 element: <Logout/>,
             },
             {
-                path: "/profile",
+                path: "/profile/:routeId",
                 element: <Profile/>,
             }
           ],

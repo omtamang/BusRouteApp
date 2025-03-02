@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faBell, faCheck, faIdCard, faRightFromBracket, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Logout from "../Logout/Logout";
 import { useEffect, useState, useRef } from "react";
 import { deleteEmail, getPassenger } from "../api/ApiService";
@@ -14,6 +14,7 @@ export default function Profile() {
     const navigate = useNavigate()
     const popupRef = useRef(null); // Reference for the popup div
     const {setToken} = useAuth()
+    const { routeId } = useParams()
 
     async function userInfo() {
         try {
@@ -65,7 +66,7 @@ export default function Profile() {
     return (
         <div>
             <div className="text-xl p-4 shadow-md">
-                <Link className="text-xl text-black" to={'/map'}>
+                <Link className="text-xl text-black" to={`/map/${routeId}`}>
                     <FontAwesomeIcon icon={faArrowLeft} className="align-middle" />
                 </Link>
                 <span className="text-xl pl-4 text-black">Profile and settings</span>

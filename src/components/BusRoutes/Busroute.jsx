@@ -29,7 +29,8 @@ export default function BusRoutes() {
 
   async function getRoute() {
     try {
-      const response = await getRoutes();
+      const response = await getRoutes(); 
+      console.log(response);
       setRoutes(response.data);
     } catch (error) {
       console.log(error);

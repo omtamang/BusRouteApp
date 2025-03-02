@@ -15,3 +15,5 @@ export const resendEmail = (email) => axios.get(`http://localhost:8080/send/code
 export const getRoutes = () => axios.get(`http://localhost:8080/get-route`);
 
 export const getRouteByid = (routeId) => axios.get(`http://localhost:8080/get-route/${routeId}`);
+
+export const getStopByRouteId = (routeId) => axios.get(`http://localhost:8080/get-route/${routeId}/stops`);
