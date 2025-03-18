@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { getRoutes, deleteRouteById } from "../api/ApiService"
 import AddRoute from "./AddRoute"
 import gsap from "gsap"
+import EditRoute from "./EditRoute"
 
 export default function Dashboard() {
   const [routes, setRoutes] = useState([])
@@ -12,6 +13,8 @@ export default function Dashboard() {
   const [showPopup, setShowPopup] = useState(false)
   const [routeToDelete, setRouteToDelete] = useState(null)
   const [showAddPopup, setShowAddPopup] = useState(false)
+  const [showEditPopup, setShowEditPopup] = useState(false)
+  const [routeToEdit, setRouteToEdit] = useState(null)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
 
@@ -72,6 +75,21 @@ export default function Dashboard() {
     setRouteToDelete(route)
     console.log(route)
     setShowPopup(true)
+  }
+
+  const handleRouteUpdated = (updatedRoute) => {
+    getAllRoutes()
+    // Show success notification
+    setNotification({
+      show: true,
+      message: `Route "${updatedRoute.route_name}" (ID: ${updatedRoute.route_id}) successfully updated`,
+      type: "success",
+    })
+  }
+
+  const handleEditClick = (route) => {
+    setRouteToEdit(route)
+    setShowEditPopup(true)
   }
 
   const handleAddClick = () => {
@@ -438,6 +456,7 @@ export default function Dashboard() {
                             data-drawer-target="drawer-update-product"
                             data-drawer-show="drawer-update-product"
                             aria-controls="drawer-update-product"
+                            onClick={() => handleEditClick(route)}
                             className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-[#1D8F34] rounded-xl hover:bg-[#186434] focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                           >
                             <svg
@@ -632,6 +651,15 @@ export default function Dashboard() {
 
       {/* Add route modal */}
       {showAddPopup && <AddRoute onClose={() => setShowAddPopup(false)} onRouteAdded={handleRouteAdded} />}
+
+      {/* Edit route modal */}
+      {showEditPopup && (
+        <EditRoute
+          onClose={() => setShowEditPopup(false)}
+          onRouteUpdated={handleRouteUpdated}
+          routeData={routeToEdit}
+        />
+      )}
     </section>
   )
 }
