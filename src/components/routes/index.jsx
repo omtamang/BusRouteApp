@@ -11,7 +11,7 @@ import GoogleLoginHandling from "../GoogleLoginHandling/GoogleLoginHandling";
 import ValidationCodeForm from "../ValidationCodeForm/ValidationCodeForm";
 import EmailVerificationPage from "../ValidationCodeForm/EmailVerificationPage";
 import Busroute from "../BusRoutes/Busroute";
-import Dashboard from "../dashboard/Dashboard";
+import RealDashboard from "../dashboard/RealDashboard";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -50,7 +50,7 @@ const Routes = () => {
             },
             {
               path: "/dashboard",
-              element: <Dashboard/>,
+              element: <RealDashboard/>,
             }
           ],
         },

@@ -151,7 +151,7 @@ export default function Dashboard() {
       {notification.show && (
         <div
           ref={notificationRef}
-          className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-2xl shadow-lg ${
+          className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-none shadow-lg ${
             notification.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
           }`}
         >
@@ -160,7 +160,7 @@ export default function Dashboard() {
       )}
 
       <div className="mx-auto max-w-screen-2xl px-4 lg:px-12">
-        <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-xl overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-none overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4 p-4"></div>
           <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700">
             <div className="w-full md:w-1/2">
@@ -189,7 +189,7 @@ export default function Dashboard() {
                     id="simple-search"
                     placeholder="Search for routes"
                     required=""
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   />
                 </div>
               </form>
@@ -199,7 +199,7 @@ export default function Dashboard() {
                 type="button"
                 id="createProductButton"
                 data-modal-toggle="createProductModal"
-                className="flex items-center justify-center text-white bg-[#1D8F34] hover:bg-[#186434] focus:ring-4 focus:ring-primary-300 font-medium rounded-xl text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                className="flex items-center justify-center text-white bg-[#1D8F34] hover:bg-[#186434] focus:ring-4 focus:ring-primary-300 font-medium rounded-none text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                 onClick={() => {
                   handleAddClick()
                 }}
@@ -222,7 +222,7 @@ export default function Dashboard() {
               <button
                 id="filterDropdownButton"
                 data-dropdown-toggle="filterDropdown"
-                className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-xl border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-none border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                 type="button"
               >
                 <svg
@@ -255,7 +255,7 @@ export default function Dashboard() {
               </button>
               <div
                 id="filterDropdown"
-                className="z-10 hidden px-3 pt-1 bg-white rounded-xl shadow w-80 dark:bg-gray-700 right-0"
+                className="z-10 hidden px-3 pt-1 bg-white rounded-none shadow w-80 dark:bg-gray-700 right-0"
               >
                 <div className="flex items-center justify-between pt-2">
                   <h6 className="text-sm font-medium text-black dark:text-white">Filters</h6>
@@ -297,7 +297,7 @@ export default function Dashboard() {
                     <input
                       type="text"
                       id="input-group-search"
-                      className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-xl bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-none bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                       placeholder="Search keywords..."
                     />
                   </div>
@@ -307,7 +307,7 @@ export default function Dashboard() {
                 <button
                   id="actionsDropdownButton"
                   data-dropdown-toggle="actionsDropdown"
-                  className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-xl border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                  className="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-none border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                   type="button"
                 >
                   Actions
@@ -327,7 +327,7 @@ export default function Dashboard() {
                 </button>
                 <div
                   id="actionsDropdown"
-                  className="hidden z-10 w-44 bg-white rounded-xl divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
+                  className="hidden z-10 w-44 bg-white rounded-none divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
                 >
                   <ul className="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="actionsDropdownButton">
                     <li>
@@ -360,7 +360,7 @@ export default function Dashboard() {
                       <input
                         id="checkbox-all"
                         type="checkbox"
-                        className="w-4 h-4 text-primary-600 bg-gray-100 rounded-full border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        className="w-4 h-4 text-primary-600 bg-gray-100 rounded-none border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                       />
                       <label htmlFor="checkbox-all" className="sr-only">
                         checkbox
@@ -415,7 +415,7 @@ export default function Dashboard() {
                             id={`checkbox-table-${index}`}
                             type="checkbox"
                             onClick={(e) => e.stopPropagation()}
-                            className="w-4 h-4 text-primary-600 bg-gray-100 rounded-full border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            className="w-4 h-4 text-primary-600 bg-gray-100 rounded-none border-gray-300 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                           />
                           <label htmlFor={`checkbox-table-${index}`} className="sr-only">
                             checkbox
@@ -427,13 +427,13 @@ export default function Dashboard() {
                       </th>
                       <td className="px-4 py-3 flex items-center">
                         <img width="28" height="28" src="https://img.icons8.com/color/48/bus.png" alt="bus" />
-                        <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded-full dark:bg-primary-900 dark:text-primary-300 ml-2">
+                        <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded-none dark:bg-primary-900 dark:text-primary-300 ml-2">
                           {route.buses_count || "N/A"}
                         </span>
                       </td>
                       <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         <div className="flex items-center">
-                          <div className="h-4 w-4 rounded-full inline-block mr-2 bg-green-400"></div>
+                          <div className="h-4 w-4 rounded-none inline-block mr-2 bg-green-400"></div>
                           {route.stops_count || "N/A"}
                         </div>
                       </td>
@@ -457,7 +457,7 @@ export default function Dashboard() {
                             data-drawer-show="drawer-update-product"
                             aria-controls="drawer-update-product"
                             onClick={() => handleEditClick(route)}
-                            className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-[#1D8F34] rounded-xl hover:bg-[#186434] focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                            className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-[#1D8F34] rounded-none hover:bg-[#186434] focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -477,7 +477,7 @@ export default function Dashboard() {
                           </button>
                           <button
                             type="button"
-                            className="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-xl text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+                            className="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-none text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                             onClick={() => handleDeleteClick(route)}
                           >
                             <svg
@@ -520,7 +520,7 @@ export default function Dashboard() {
               <li>
                 <a
                   href="#"
-                  className="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-xl border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  className="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-none border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <span className="sr-only">Previous</span>
                   <svg
@@ -582,7 +582,7 @@ export default function Dashboard() {
               <li>
                 <a
                   href="#"
-                  className="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-xl border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  className="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-none border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <span className="sr-only">Next</span>
                   <svg
@@ -610,7 +610,7 @@ export default function Dashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div id="deleteModal" ref={popupRef} className="relative p-4 w-full max-w-md">
             {/* Modal content */}
-            <div className="relative p-4 text-center bg-white rounded-2xl shadow dark:bg-gray-800 sm:p-5">
+            <div className="relative p-4 text-center bg-white rounded-none shadow dark:bg-gray-800 sm:p-5">
               <svg
                 className="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto"
                 aria-hidden="true"
@@ -628,14 +628,14 @@ export default function Dashboard() {
               <div className="flex justify-center items-center space-x-4">
                 <button
                   type="button"
-                  className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-xl border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                  className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-none border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
                   onClick={() => setShowPopup(false)}
                 >
                   No, cancel
                 </button>
                 <button
                   type="button"
-                  className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-xl hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
+                  className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-none hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
                   onClick={() => {
                     handleConfirmDelete()
                     setShowPopup(false)
