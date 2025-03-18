@@ -11,6 +11,7 @@ import GoogleLoginHandling from "../GoogleLoginHandling/GoogleLoginHandling";
 import ValidationCodeForm from "../ValidationCodeForm/ValidationCodeForm";
 import EmailVerificationPage from "../ValidationCodeForm/EmailVerificationPage";
 import Busroute from "../BusRoutes/Busroute";
+import Dashboard from "../dashboard/Dashboard";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -23,7 +24,7 @@ const Routes = () => {
         {
           path: "/google/handling/:email",
           element: <GoogleLoginHandling/>,
-        }
+        },
       ];
 
       const routesForAuthenticatedOnly = [
@@ -46,6 +47,10 @@ const Routes = () => {
             {
                 path: "/profile/:routeId",
                 element: <Profile/>,
+            },
+            {
+              path: "/dashboard",
+              element: <Dashboard/>,
             }
           ],
         },

@@ -12,8 +12,12 @@ export const verifyEmail = (details) => axios.post(`http://localhost:8080/verify
 
 export const resendEmail = (email) => axios.get(`http://localhost:8080/send/code/${email}`);
 
-export const getRoutes = () => axios.get(`http://localhost:8080/get-route`);
+export const getRoutes = () => axios.get('http://localhost:8080/get-route');
 
 export const getRouteByid = (routeId) => axios.get(`http://localhost:8080/get-route/${routeId}`);
 
 export const getStopByRouteId = (routeId) => axios.get(`http://localhost:8080/get-route/${routeId}/stops`);
+
+export const deleteRouteById = (routeId) => axios.delete(`http://localhost:8080/route/delete/${routeId}`);
+
+export const addRoute = (route) => axios.post('http://localhost:8080/add-route', route);
