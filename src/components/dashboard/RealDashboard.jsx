@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
-import Dashboard from "./Dashboard"
+import Dashboard from './Dashboard'
+import StopDashboard from "./StopDashboard"
 
 // Custom simple components instead of shadcn/ui
 const Card = ({ children, className = "" }) => (
@@ -22,7 +23,7 @@ const CardDescription = ({ children, className = "" }) => (
 // Update the Button component to better handle alignment
 const Button = ({ children, variant = "default", size = "default", className = "", onClick }) => {
   const variantClasses = {
-    default: "bg-[#1D8F34] text-white hover:bg-[#1D8F34]",
+    default: "bg-blue-600 text-white hover:bg-blue-700",
     ghost: "bg-transparent hover:bg-gray-100",
     outline: "bg-transparent border border-gray-300 hover:bg-gray-50",
   }
@@ -269,6 +270,24 @@ export default function RealDashboard() {
     </svg>
   )
 
+  const UserIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="mr-2 flex-shrink-0"
+    >
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+  )
+
   const MenuIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -419,17 +438,7 @@ export default function RealDashboard() {
       case "stop":
         return (
           <div className="dashboard-content">
-            <Card>
-              <CardHeader>
-                <CardTitle>Stop Management</CardTitle>
-                <CardDescription>Your stop components will be displayed here</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg border-gray-200">
-                  <p className="text-gray-500">Stop components will be rendered here</p>
-                </div>
-              </CardContent>
-            </Card>
+            <StopDashboard/>
           </div>
         )
       case "bus":
@@ -443,6 +452,22 @@ export default function RealDashboard() {
               <CardContent>
                 <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg border-gray-200">
                   <p className="text-gray-500">Bus components will be rendered here</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )
+      case "user":
+        return (
+          <div className="dashboard-content">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Management</CardTitle>
+                <CardDescription>Your user components will be displayed here</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg border-gray-200">
+                  <p className="text-gray-500">User components will be rendered here</p>
                 </div>
               </CardContent>
             </Card>
@@ -512,14 +537,23 @@ export default function RealDashboard() {
             <BusIcon />
             <span>Bus</span>
           </Button>
+
+          <Button
+            variant={activeSection === "user" ? "default" : "ghost"}
+            className="w-full justify-start text-left sidebar-item"
+            onClick={() => setActiveSection("user")}
+          >
+            <UserIcon />
+            <span>User Management</span>
+          </Button>
         </nav>
 
         <div className="absolute bottom-0 w-full p-4 border-t">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-[#1D8F34] flex items-center justify-center text-white">A</div>
+            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white">A</div>
             <div className="ml-3">
               <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-gray-500">admin@gmail.com</p>
+              <p className="text-xs text-gray-500">admin@transit.com</p>
             </div>
           </div>
         </div>
@@ -533,12 +567,14 @@ export default function RealDashboard() {
             {activeSection === "route" && "Route Management"}
             {activeSection === "stop" && "Stop Management"}
             {activeSection === "bus" && "Bus Management"}
+            {activeSection === "user" && "User Management"}
           </h1>
           <p className="text-gray-500">
             {activeSection === "home" && "Monitor your transit system performance"}
             {activeSection === "route" && "Manage and monitor transit routes"}
             {activeSection === "stop" && "Manage bus stops and stations"}
             {activeSection === "bus" && "Manage your bus fleet"}
+            {activeSection === "user" && "Manage user accounts and permissions"}
           </p>
         </header>
 

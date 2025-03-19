@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { getRoutes, deleteRouteById } from "../api/ApiService"
+import { getRoutes, deleteRouteById, getStops } from "../api/ApiService"
 import AddRoute from "./AddRoute"
 import gsap from "gsap"
 import EditRoute from "./EditRoute"
 
-export default function Dashboard({ darkMode }) {
-  const [routes, setRoutes] = useState([])
+export default function StopDashboard({ darkMode }) {
+  const [stops, setStops] = useState([])
   const [loading, setLoading] = useState(true)
   const popupRef = useRef(null)
   const [showPopup, setShowPopup] = useState(false)
@@ -18,10 +18,10 @@ export default function Dashboard({ darkMode }) {
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
 
-  async function getAllRoutes() {
+  async function getAllStops() {
     try {
-      const response = await getRoutes()
-      setRoutes(response.data)
+      const response = await getStops()
+      setStops(response.data)
       setLoading(false)
       console.log("Routes loaded:", response.data)
     } catch (error) {
@@ -31,7 +31,7 @@ export default function Dashboard({ darkMode }) {
   }
 
   useEffect(() => {
-    getAllRoutes()
+    getAllStops()
   }, []) // Runs only on component mount (load)
 
   // Notification animation effect
@@ -78,11 +78,11 @@ export default function Dashboard({ darkMode }) {
   }
 
   const handleRouteUpdated = (updatedRoute) => {
-    getAllRoutes()
+    getAllStops()
     // Show success notification
     setNotification({
       show: true,
-      message: `Route "${updatedRoute.route_name}" (ID: ${updatedRoute.route_id}) successfully updated`,
+      message: `Stop "${updatedRoute.stop_name}" (ID: ${updatedRoute.stop_id}) successfully updated`,
       type: "success",
     })
   }
@@ -97,11 +97,11 @@ export default function Dashboard({ darkMode }) {
   }
 
   const handleRouteAdded = () => {
-    getAllRoutes()
+    getAllStops()
     // Show success notification
     setNotification({
       show: true,
-      message: "Route successfully added to the database",
+      message: "Stop successfully added to the database",
       type: "success",
     })
   }
@@ -114,24 +114,24 @@ export default function Dashboard({ darkMode }) {
       const response = await deleteRouteById(routeToDelete.route_id)
 
       // Update the UI by removing the deleted route
-      setRoutes(routes.filter((route) => route.route_id !== routeToDelete.route_id))
+      setStops(stops.filter((stop) => stop.stop_id !== routeToDelete.stop_id))
 
       // Show success notification with route ID and name
       setNotification({
         show: true,
-        message: `Route "${routeToDelete.route_name}" (ID: ${routeToDelete.route_id}) successfully deleted`,
+        message: `Stop "${routeToDelete.stop_name}" (ID: ${routeToDelete.stop_id}) successfully deleted`,
         type: "success",
       })
 
       setRouteToDelete(null)
     } catch (err) {
-      console.error("Error deleting route:", err)
+      console.error("Error deleting stop:", err)
       // Show error notification
       setNotification({
         show: true,
         message: routeToDelete
-          ? `Failed to delete route "${routeToDelete.route_name}" (ID: ${routeToDelete.route_id})`
-          : "Failed to delete route",
+          ? `Failed to delete stop "${routeToDelete.stop_name}" (ID: ${routeToDelete.stop_id})`
+          : "Failed to delete stop",
         type: "error",
       })
     }
@@ -390,26 +390,15 @@ export default function Dashboard({ darkMode }) {
                     </div>
                   </th>
                   <th scope="col" className="p-4">
-                    Route
+                    Stop
                   </th>
                   <th scope="col" className="p-4">
-                    No. of buses
+                    Latitude
                   </th>
                   <th scope="col" className="p-4">
-                    No. of stops
+                    Longitude
                   </th>
-                  <th scope="col" className="p-4">
-                    Start Latitude
-                  </th>
-                  <th scope="col" className="p-4">
-                    Start Longitude
-                  </th>
-                  <th scope="col" className="p-4">
-                    End Latitude
-                  </th>
-                  <th scope="col" className="p-4">
-                    End Longitude
-                  </th>
+                  
                   <th scope="col" className="p-4">
                     Actions
                   </th>
@@ -422,14 +411,14 @@ export default function Dashboard({ darkMode }) {
                       Loading route data...
                     </td>
                   </tr>
-                ) : routes.length === 0 ? (
+                ) : stops.length === 0 ? (
                   <tr className={`border-b ${darkMode ? "border-gray-600" : ""}`}>
                     <td colSpan="9" className="px-4 py-3 text-center">
-                      No routes found
+                      No stops found
                     </td>
                   </tr>
                 ) : (
-                  routes.map((route, index) => (
+                  stops.map((stop, index) => (
                     <tr
                       key={index}
                       className={`border-b ${darkMode ? "border-gray-600 hover:bg-gray-700" : "hover:bg-gray-100"}`}
@@ -455,42 +444,21 @@ export default function Dashboard({ darkMode }) {
                         scope="row"
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
                       >
-                        <div className="flex items-center mr-3">{route.route_name}</div>
+                        <div className="flex items-center mr-3">{stop.stop_name}</div>
                       </th>
-                      <td className="px-4 py-3 flex items-center">
-                        <img width="28" height="28" src="https://img.icons8.com/color/48/bus.png" alt="bus" />
-                        <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded-none dark:bg-primary-900 dark:text-primary-300 ml-2">
-                          {route.buses_count || "N/A"}
-                        </span>
-                      </td>
+
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
                       >
-                        <div className="flex items-center">
-                          <div className="h-4 w-4 rounded-none inline-block mr-2 bg-green-400"></div>
-                          {route.stops_count || "N/A"}
-                        </div>
+                        {stop.lat}
                       </td>
+                      
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
                       >
-                        {route.start_lat}
+                        {stop.lng}
                       </td>
-                      <td
-                        className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
-                      >
-                        {route.start_lng}
-                      </td>
-                      <td
-                        className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
-                      >
-                        {route.end_lat}
-                      </td>
-                      <td
-                        className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
-                      >
-                        <div className="flex items-center">{route.end_lng}</div>
-                      </td>
+
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
                       >
@@ -500,7 +468,7 @@ export default function Dashboard({ darkMode }) {
                             data-drawer-target="drawer-update-product"
                             data-drawer-show="drawer-update-product"
                             aria-controls="drawer-update-product"
-                            onClick={() => handleEditClick(route)}
+                            onClick={() => handleEditClick(stop)}
                             className="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-[#1D8F34] rounded-none hover:bg-[#186434] focus:ring-4 focus:outline-none focus:ring-primary-300"
                           >
                             <svg
@@ -526,7 +494,7 @@ export default function Dashboard({ darkMode }) {
                                 ? "border-red-500 text-red-500 hover:text-white hover:bg-red-600 focus:ring-red-900"
                                 : ""
                             }`}
-                            onClick={() => handleDeleteClick(route)}
+                            onClick={() => handleDeleteClick(stop)}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -559,10 +527,10 @@ export default function Dashboard({ darkMode }) {
               Showing
               <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
                 {" "}
-                {routes.length > 0 ? `1-${Math.min(routes.length, 10)}` : "0"}{" "}
+                {stops.length > 0 ? `1-${Math.min(stops.length, 10)}` : "0"}{" "}
               </span>
               of
-              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}> {routes.length} </span>
+              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}> {stops.length} </span>
             </span>
             <ul className="inline-flex items-stretch -space-x-px">
               <li>
