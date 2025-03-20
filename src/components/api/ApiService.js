@@ -25,3 +25,9 @@ export const addRoute = (route) => axios.post('http://localhost:8080/add-route',
 export const updateRoute = (route, routeId) => axios.put(`http://localhost:8080/route/${routeId}`, route)
 
 export const getStops = () => axios.get(`http://localhost:8080/get-stops`)
+
+export const deleteStopById = (stopId) => axios.delete(`http://localhost:8080/stop/delete/${stopId}`)
+
+export const addStop = (stop, routeId) => axios.post(`http://localhost:8080/add-stops/${routeId}`, stop)
+
+export const updateStop = (stop, routeId, stopId) => axios.put(`http://localhost:8080/stop/${stopId}/update/${routeId}`, stop)

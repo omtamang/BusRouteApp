@@ -1,37 +1,45 @@
 "use client"
 
 import { Field, Formik } from "formik"
-import { useState } from "react"
-import { addRoute } from "../api/ApiService"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { addStop, getRoutes } from "../api/ApiService"
 
-export default function AddRoute({ onClose, onRouteAdded }) {
-  const [route_name, setRouteName] = useState()
-  const [start_lat, setStartLat] = useState()
-  const [start_lng, setStartLng] = useState()
-  const [end_lat, setEndLat] = useState()
-  const [end_lng, setEndLng] = useState()
-  const [no_of_buses, setNoOfBuses] = useState()
-  const navigate = useNavigate()
+export default function AddStop({ onClose, onStopAdded }) {
+  const [stop_name, setStopeName] = useState("")
+  const [lat, setLat] = useState("")
+  const [lng, setLng] = useState("")
+  const [routes, setRoutes] = useState([])
 
   async function onSubmit(values) {
-    const route = {
-      route_name: values.route_name,
-      start_lat: values.start_lat,
-      start_lng: values.start_lng,
-      end_lat: values.end_lat,
-      end_lng: values.end_lng,
-      no_of_buses: values.no_of_buses,
+    console.log("Form values being submitted:", values)
+    const stop = {
+      stop_name: values.stop_name,
+      lat: values.lat,
+      lng: values.lng,
     }
 
     try {
-      const response = await addRoute(route)
-      onRouteAdded()
+      const response = await addStop(stop, values.route_id)
+      onStopAdded()
       onClose()
     } catch (err) {
       console.log(err)
     }
   }
+
+  async function getAllRoutes() {
+    try {
+      const response = await getRoutes()
+      console.log("Routes loaded:", response.data)
+      setRoutes(response.data)
+    } catch (error) {
+      console.error("Error fetching routes:", error)
+    }
+  }
+
+  useEffect(() => {
+    getAllRoutes()
+  }, [])
 
   return (
     <>
@@ -49,7 +57,7 @@ export default function AddRoute({ onClose, onRouteAdded }) {
           <div className="relative p-4 bg-white rounded-none shadow dark:bg-gray-800 sm:p-5">
             {/* Modal header */}
             <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Add Route</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Add Stop</h3>
               <button
                 type="button"
                 className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-none text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -75,7 +83,12 @@ export default function AddRoute({ onClose, onRouteAdded }) {
             </div>
             {/* Modal body */}
             <Formik
-              initialValues={{ route_name, start_lat, start_lng, end_lat, end_lng, no_of_buses }}
+              initialValues={{
+                stop_name: stop_name || "",
+                lat: lat || "",
+                lng: lng || "",
+                route_id: "",
+              }}
               enableReinitialize={true}
               onSubmit={onSubmit}
             >
@@ -83,86 +96,73 @@ export default function AddRoute({ onClose, onRouteAdded }) {
                 <form onSubmit={props.handleSubmit}>
                   <div className="grid gap-4 mb-4 sm:grid-cols-2">
                     <fieldset>
-                      <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Route Name
+                      <label
+                        htmlFor="stop_name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Stop Name
                       </label>
                       <Field
                         type="text"
-                        name="route_name"
-                        id="name"
+                        name="stop_name"
+                        id="stop_name"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Enter the route name"
+                        placeholder="Enter the stop name"
                         required
                       />
                     </fieldset>
                     <fieldset>
-                      <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Start Longitude
+                      <label htmlFor="lat" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Latitude
                       </label>
                       <Field
                         type="number"
-                        name="start_lat"
-                        id="brand"
+                        name="lat"
+                        id="lat"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Starting longitude"
-                        required
-                      />
-                    </fieldset>
-
-                    <fieldset>
-                      <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Start Latitude
-                      </label>
-                      <Field
-                        type="number"
-                        name="start_lng"
-                        id="brand"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Starting longitude"
+                        placeholder="Stop Latitude"
                         required
                       />
                     </fieldset>
 
                     <fieldset>
-                      <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        End Longitude
+                      <label htmlFor="lng" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Longitude
                       </label>
                       <Field
                         type="number"
-                        name="end_lat"
-                        id="brand"
+                        name="lng"
+                        id="lng"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Ending longitude"
+                        placeholder="Stop Longitude"
                         required
                       />
                     </fieldset>
 
                     <fieldset>
-                      <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        End Latitude
+                      <label
+                        htmlFor="route_id"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Route
                       </label>
                       <Field
-                        type="number"
-                        name="end_lng"
-                        id="brand"
+                        as="select"
+                        name="route_id"
+                        id="route_id"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Ending longitude"
                         required
-                      />
-                    </fieldset>
-
-                    <fieldset>
-                      <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        No of buses
-                      </label>
-                      <Field
-                        type="number"
-                        name="no_of_buses"
-                        id="price"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-none focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="0"
-                        required
-                      />
+                      >
+                        <option value="">Select a route</option>
+                        {routes &&
+                          routes.length > 0 &&
+                          routes.map((route) => (
+                            // Make sure we're using the correct property for the route ID
+                            <option key={route.id || route._id} value={route.id || route._id || route.route_id}>
+                              {route.route_name}
+                            </option>
+                          ))}
+                      </Field>
                     </fieldset>
                   </div>
 
@@ -182,7 +182,7 @@ export default function AddRoute({ onClose, onRouteAdded }) {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Add new route
+                    Add new stop
                   </button>
                 </form>
               )}

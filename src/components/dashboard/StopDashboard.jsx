@@ -1,20 +1,20 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { getRoutes, deleteRouteById, getStops } from "../api/ApiService"
-import AddRoute from "./AddRoute"
+import { deleteStopById, getStops } from "../api/ApiService"
 import gsap from "gsap"
-import EditRoute from "./EditRoute"
+import AddStop from "./AddStop"
+import EditStop from "./EditStop"
 
 export default function StopDashboard({ darkMode }) {
   const [stops, setStops] = useState([])
   const [loading, setLoading] = useState(true)
   const popupRef = useRef(null)
   const [showPopup, setShowPopup] = useState(false)
-  const [routeToDelete, setRouteToDelete] = useState(null)
+  const [stopToDelete, setStopToDelete] = useState(null)
   const [showAddPopup, setShowAddPopup] = useState(false)
   const [showEditPopup, setShowEditPopup] = useState(false)
-  const [routeToEdit, setRouteToEdit] = useState(null)
+  const [stopToEdit, setStopToEdit] = useState(null)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
 
@@ -71,24 +71,24 @@ export default function StopDashboard({ darkMode }) {
     }
   }, [showPopup])
 
-  const handleDeleteClick = (route) => {
-    setRouteToDelete(route)
-    console.log(route)
+  const handleDeleteClick = (stop) => {
+    setStopToDelete(stop)
+    console.log(stop)
     setShowPopup(true)
   }
 
-  const handleRouteUpdated = (updatedRoute) => {
+  const handleStopUpdated = (updatedStop) => {
     getAllStops()
     // Show success notification
     setNotification({
       show: true,
-      message: `Stop "${updatedRoute.stop_name}" (ID: ${updatedRoute.stop_id}) successfully updated`,
+      message: `Stop "${updatedStop.stop_name}" (ID: ${updatedStop.stop_id}) successfully updated`,
       type: "success",
     })
   }
 
-  const handleEditClick = (route) => {
-    setRouteToEdit(route)
+  const handleEditClick = (stop) => {
+    setStopToEdit(stop)
     setShowEditPopup(true)
   }
 
@@ -96,7 +96,7 @@ export default function StopDashboard({ darkMode }) {
     setShowAddPopup(true)
   }
 
-  const handleRouteAdded = () => {
+  const handleStopAdded = () => {
     getAllStops()
     // Show success notification
     setNotification({
@@ -106,31 +106,31 @@ export default function StopDashboard({ darkMode }) {
     })
   }
 
-  async function deleteRoute() {
+  async function deleteStop() {
     try {
-      if (!routeToDelete) return
+      if (!stopToDelete) return
 
-      console.log("Deleting route with ID:", routeToDelete.route_id)
-      const response = await deleteRouteById(routeToDelete.route_id)
+      console.log("Deleting route with ID:", stopToDelete.stop_id)
+      const response = await deleteStopById(stopToDelete.stop_id)
 
       // Update the UI by removing the deleted route
-      setStops(stops.filter((stop) => stop.stop_id !== routeToDelete.stop_id))
+      setStops(stops.filter((stop) => stop.stop_id !== stopToDelete.stop_id))
 
       // Show success notification with route ID and name
       setNotification({
         show: true,
-        message: `Stop "${routeToDelete.stop_name}" (ID: ${routeToDelete.stop_id}) successfully deleted`,
+        message: `Stop "${stopToDelete.stop_name}" (ID: ${stopToDelete.stop_id}) successfully deleted`,
         type: "success",
       })
 
-      setRouteToDelete(null)
+      setStopToDelete(null)
     } catch (err) {
       console.error("Error deleting stop:", err)
       // Show error notification
       setNotification({
         show: true,
-        message: routeToDelete
-          ? `Failed to delete stop "${routeToDelete.stop_name}" (ID: ${routeToDelete.stop_id})`
+        message: stopToDelete
+          ? `Failed to delete stop "${stopToDelete.stop_name}" (ID: ${stopToDelete.stop_id})`
           : "Failed to delete stop",
         type: "error",
       })
@@ -139,7 +139,7 @@ export default function StopDashboard({ darkMode }) {
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteRoute()
+      await deleteStop()
     } catch (error) {
       console.error("Error deleting route:", error)
     }
@@ -225,7 +225,7 @@ export default function StopDashboard({ darkMode }) {
                     d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                   />
                 </svg>
-                Add route
+                Add stop
               </button>
               <button
                 id="filterDropdownButton"
@@ -703,15 +703,15 @@ export default function StopDashboard({ darkMode }) {
 
       {/* Add route modal */}
       {showAddPopup && (
-        <AddRoute onClose={() => setShowAddPopup(false)} onRouteAdded={handleRouteAdded} darkMode={darkMode} />
+        <AddStop onClose={() => setShowAddPopup(false)} onStopAdded={handleStopAdded} darkMode={darkMode} />
       )}
 
       {/* Edit route modal */}
       {showEditPopup && (
-        <EditRoute
+        <EditStop
           onClose={() => setShowEditPopup(false)}
-          onRouteUpdated={handleRouteUpdated}
-          routeData={routeToEdit}
+          onStopUpdated={handleStopUpdated}
+          stopData={stopToEdit}
           darkMode={darkMode}
         />
       )}
