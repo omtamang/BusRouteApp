@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import Dashboard from './Dashboard'
 import StopDashboard from "./StopDashboard"
+import UserDashboard from "./UserDashboard"
 
 // Custom simple components instead of shadcn/ui
 const Card = ({ children, className = "" }) => (
@@ -460,17 +461,7 @@ export default function RealDashboard() {
       case "user":
         return (
           <div className="dashboard-content">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>Your user components will be displayed here</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg border-gray-200">
-                  <p className="text-gray-500">User components will be rendered here</p>
-                </div>
-              </CardContent>
-            </Card>
+            <UserDashboard/>
           </div>
         )
       default:
