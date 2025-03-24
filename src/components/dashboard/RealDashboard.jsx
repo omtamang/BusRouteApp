@@ -432,13 +432,13 @@ export default function RealDashboard() {
         )
       case "route":
         return (
-          <div className="dashboard-content">
+          <div className="dashboard-content w-full h-full">
             <Dashboard/>
           </div>
         )
       case "stop":
         return (
-          <div className="dashboard-content">
+          <div className="dashboard-content w-full h-full">
             <StopDashboard/>
           </div>
         )
@@ -460,7 +460,7 @@ export default function RealDashboard() {
         )
       case "user":
         return (
-          <div className="dashboard-content">
+          <div className="dashboard-content w-full h-full">
             <UserDashboard/>
           </div>
         )
@@ -535,7 +535,7 @@ export default function RealDashboard() {
             onClick={() => setActiveSection("user")}
           >
             <UserIcon />
-            <span>User Management</span>
+            <span>User</span>
           </Button>
         </nav>
 

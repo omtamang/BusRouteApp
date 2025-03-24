@@ -35,3 +35,7 @@ export const updateStop = (stop, routeId, stopId) => axios.put(`http://localhost
 export const getUsers = () => axios.get('http://localhost:8080/get-users')
 
 export const deleteUser = (passengerId) => axios.delete(`http://localhost:8080/delete-user/${passengerId}`)
+
+export const addUser = (passenger) => axios.post(`http://localhost:8080/add-user`, passenger)
+
+export const updateUser = (passenger, passengerId) => axios.put(`http://localhost:8080/update-user/${passengerId}`, passenger)

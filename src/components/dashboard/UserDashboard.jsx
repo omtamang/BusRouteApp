@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react"
 import { deleteUser, getUsers } from "../api/ApiService"
-import AddRoute from "./AddRoute"
 import gsap from "gsap"
-import EditRoute from "./EditRoute"
+import AddUser from "./AddUser"
+import EditUser from "./EditUser"
 
 export default function UserDashboard({ darkMode }) {
   const [users, setUsers] = useState([])
@@ -14,7 +14,7 @@ export default function UserDashboard({ darkMode }) {
   const [userToDelete, setUserToDelete] = useState(null)
   const [showAddPopup, setShowAddPopup] = useState(false)
   const [showEditPopup, setShowEditPopup] = useState(false)
-  const [routeToEdit, setRouteToEdit] = useState(null)
+  const [userToEdit, setUserToEdit] = useState(null)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
 
@@ -87,8 +87,8 @@ export default function UserDashboard({ darkMode }) {
     })
   }
 
-  const handleEditClick = (route) => {
-    setRouteToEdit(route)
+  const handleEditClick = (user) => {
+    setUserToEdit(user)
     setShowEditPopup(true)
   }
 
@@ -96,12 +96,12 @@ export default function UserDashboard({ darkMode }) {
     setShowAddPopup(true)
   }
 
-  const handleRouteAdded = () => {
+  const handleUserAdded = () => {
     getAllUsers()
     // Show success notification
     setNotification({
       show: true,
-      message: "Route successfully added to the database",
+      message: "User successfully added to the database",
       type: "success",
     })
   }
@@ -707,15 +707,15 @@ export default function UserDashboard({ darkMode }) {
 
       {/* Add route modal */}
       {showAddPopup && (
-        <AddRoute onClose={() => setShowAddPopup(false)} onRouteAdded={handleRouteAdded} darkMode={darkMode} />
+        <AddUser onClose={() => setShowAddPopup(false)} onUserAdded={handleUserAdded} darkMode={darkMode} />
       )}
 
       {/* Edit route modal */}
       {showEditPopup && (
-        <EditRoute
+        <EditUser
           onClose={() => setShowEditPopup(false)}
           onRouteUpdated={handleRouteUpdated}
-          routeData={routeToEdit}
+          userData={userToEdit}
           darkMode={darkMode}
         />
       )}
