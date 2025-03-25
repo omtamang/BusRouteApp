@@ -16,6 +16,7 @@ export default function AddRoute({ onClose, onRouteAdded }) {
   const [startAddress, setStartAddress] = useState("")
   const [endAddress, setEndAddress] = useState("")
   const [mapError, setMapError] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
 
   // Current pin position
   const [currentPin, setCurrentPin] = useState(null)
@@ -173,41 +174,93 @@ export default function AddRoute({ onClose, onRouteAdded }) {
     })
   }
 
+  const LOCATIONIQ_API_KEY = "pk.abc77c9c4d1bf2a25c28c2579bf8bb45" // Using the key from your original code
+
+  // Let's also update the getAddressFromLatLng function to use LocationIQ
   const getAddressFromLatLng = (latLng) => {
-    const geocoder = new window.google.maps.Geocoder()
-    geocoder.geocode({ location: latLng }, (results, status) => {
-      if (status === "OK" && results[0]) {
-        setCurrentPinAddress(results[0].formatted_address)
-      } else {
-        // If geocoding fails, at least show the coordinates
+    // Use LocationIQ reverse geocoding
+    fetch(
+      `https://api.locationiq.com/v1/reverse.php?key=${LOCATIONIQ_API_KEY}&lat=${latLng.lat()}&lon=${latLng.lng()}&format=json`,
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response.json()
+      })
+      .then((data) => {
+        if (data && data.display_name) {
+          setCurrentPinAddress(data.display_name)
+        } else {
+          // If geocoding fails, at least show the coordinates
+          setCurrentPinAddress(`Location at ${latLng.lat().toFixed(6)}, ${latLng.lng().toFixed(6)}`)
+        }
+      })
+      .catch((error) => {
+        console.error("Error in reverse geocoding:", error)
         setCurrentPinAddress(`Location at ${latLng.lat().toFixed(6)}, ${latLng.lng().toFixed(6)}`)
-      }
-    })
+      })
   }
 
+  const fetchSuggestions = async (query) => {
+    if (query.length > 2) {
+      try {
+        const response = await fetch(
+          `https://api.locationiq.com/v1/autocomplete.php?key=${LOCATIONIQ_API_KEY}&q=${query}&limit=5&format=json`,
+        )
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        console.log("LocationIQ suggestions:", data) // Debug log
+        setSuggestions(data || [])
+      } catch (error) {
+        console.error("Error fetching suggestions:", error)
+        setSuggestions([])
+      }
+    } else {
+      setSuggestions([])
+    }
+  }
+
+  // Let's also update the handleSearchSubmit function to use LocationIQ
   const handleSearchSubmit = () => {
     if (!searchQuery.trim() || !mapLoaded) return
 
-    // Use Geocoding API to find the location
-    const geocoder = new window.google.maps.Geocoder()
-    geocoder.geocode({ address: searchQuery }, (results, status) => {
-      if (status === "OK" && results[0]) {
-        const location = results[0].geometry.location
+    // Use LocationIQ to find the location
+    fetch(`https://api.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${searchQuery}&format=json`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response.json()
+      })
+      .then((data) => {
+        if (data && data.length > 0) {
+          const location = {
+            lat: Number.parseFloat(data[0].lat),
+            lng: Number.parseFloat(data[0].lon),
+          }
 
-        // Move map to the location
-        mapInstanceRef.current.setCenter(location)
-        mapInstanceRef.current.setZoom(15)
+          // Move map to the location
+          mapInstanceRef.current.setCenter(location)
+          mapInstanceRef.current.setZoom(15)
 
-        // Place pin at the location
-        placePin(location)
+          // Place pin at the location
+          placePin(new window.google.maps.LatLng(location.lat, location.lng))
 
-        // Clear the search query
-        setSearchQuery("")
-      } else {
-        // Handle geocoding error
-        alert("Location not found. Please try a different search term.")
-      }
-    })
+          // Clear the search query and suggestions
+          setSearchQuery("")
+          setSuggestions([])
+        } else {
+          // Handle geocoding error
+          alert("Location not found. Please try a different search term.")
+        }
+      })
+      .catch((error) => {
+        console.error("Error searching location:", error)
+        alert("Error searching for location. Please try again.")
+      })
   }
 
   const setAsStart = () => {
@@ -332,7 +385,10 @@ export default function AddRoute({ onClose, onRouteAdded }) {
                       type="text"
                       placeholder="Search for a location (e.g., 'New York City' or an address)"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        fetchSuggestions(e.target.value)
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault()
@@ -348,6 +404,37 @@ export default function AddRoute({ onClose, onRouteAdded }) {
                     >
                       Search
                     </button>
+                    {suggestions && suggestions.length > 0 && (
+                      <ul className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto">
+                        {suggestions.map((item, index) => (
+                          <li
+                            key={index}
+                            onClick={() => {
+                              setSearchQuery(item.display_name)
+
+                              // Create a Google Maps LatLng object from the LocationIQ coordinates
+                              const location = new window.google.maps.LatLng(
+                                Number.parseFloat(item.lat),
+                                Number.parseFloat(item.lon),
+                              )
+
+                              // Move map to the location
+                              mapInstanceRef.current.setCenter(location)
+                              mapInstanceRef.current.setZoom(15)
+
+                              // Place pin at the location
+                              placePin(location)
+
+                              // Clear suggestions
+                              setSuggestions([])
+                            }}
+                            className="p-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200 last:border-b-0"
+                          >
+                            {item.display_name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </div>
