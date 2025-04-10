@@ -12,7 +12,7 @@ import ValidationCodeForm from "../ValidationCodeForm/ValidationCodeForm";
 import EmailVerificationPage from "../ValidationCodeForm/EmailVerificationPage";
 import Busroute from "../BusRoutes/Busroute";
 import RealDashboard from "../dashboard/RealDashboard";
-import Location from "../dashboard/Location";
+import LiveGPSTracking from "../dashboard/LiveGPSTracking";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -55,8 +55,8 @@ const Routes = () => {
             },
             {
               path: "/location",
-              element: <Location/>,
-            },
+              element: <LiveGPSTracking/>
+            }
           ],
         },
       ];

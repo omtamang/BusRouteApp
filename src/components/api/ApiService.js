@@ -39,3 +39,5 @@ export const deleteUser = (passengerId) => axios.delete(`http://localhost:8080/d
 export const addUser = (passenger) => axios.post(`http://localhost:8080/add-user`, passenger)
 
 export const updateUser = (passenger, passengerId) => axios.put(`http://localhost:8080/update-user/${passengerId}`, passenger)
+
+export const getBusByRouteId = (routeId) => axios.get(`http://localhost:8080/get-route/${routeId}/buses`)
