@@ -12,10 +12,13 @@ import {
   faChevronLeft,
   faChevronRight,
   faRoute,
+  faUser,
+  faList,
 } from "@fortawesome/free-solid-svg-icons"
 import { Link, useParams } from "react-router-dom"
 import { getBusByRouteId, getRouteByid, getStopByRouteId } from "./api/ApiService"
 import gsap from "gsap"
+import BusListPanel from "./BusListPanel" // Import the BusListPanel component
 
 // Constants
 const DEFAULT_CENTER = { lat: 27.7172, lon: 85.324 } // Kathmandu
@@ -623,6 +626,13 @@ export default function BasicMap() {
   const [stop, setStop] = useState(null)
   const mapRef = useRef(null)
 
+  // State for BusListPanel
+  const [isBusListPanelOpen, setIsBusListPanelOpen] = useState(false)
+
+  // Animation refs for the control buttons
+  const controlsRef = useRef(null)
+  const busRouteButtonRef = useRef(null)
+
   // Fetch route and stop data
   useEffect(() => {
     async function fetchData() {
@@ -704,12 +714,106 @@ export default function BasicMap() {
         height: 100%;
         object-fit: contain;
       }
+      
+      /* Custom styles for map controls */
+      .map-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .map-control-btn {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #1D8F34;
+        color: white;
+        border-radius: 50%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      
+      .map-control-btn:hover {
+        background-color: #166d27;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0,   0.15);
+      }
+      
+      .map-control-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      .map-control-btn.active {
+        background-color: #166d27;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .map-controls {
+          gap: 8px;
+        }
+        
+        .map-control-btn {
+          width: 40px;
+          height: 40px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .map-controls {
+          gap: 6px;
+        }
+        
+        .map-control-btn {
+          width: 36px;
+          height: 36px;
+        }
+      }
     `
     document.head.appendChild(styleEl)
 
     // Cleanup function
     return () => {
       document.head.removeChild(styleEl)
+    }
+  }, [])
+
+  // Animate the control buttons when they appear
+  useEffect(() => {
+    if (controlsRef.current) {
+      const buttons = controlsRef.current.querySelectorAll(".map-control-btn")
+
+      gsap.fromTo(
+        buttons,
+        { scale: 0, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+          delay: 0.3,
+        },
+      )
+    }
+
+    if (busRouteButtonRef.current) {
+      gsap.fromTo(
+        busRouteButtonRef.current,
+        { scale: 0, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.5,
+          ease: "back.out(1.7)",
+          delay: 0.8,
+        },
+      )
     }
   }, [])
 
@@ -799,31 +903,52 @@ export default function BasicMap() {
     }
   }, [buses, selectedBus])
 
+  // Toggle bus list panel
+  const toggleBusListPanel = useCallback(() => {
+    setIsBusListPanelOpen((prevState) => !prevState)
+  }, [])
+
+  // Close bus list panel
+  const closeBusListPanel = useCallback(() => {
+    setIsBusListPanelOpen(false)
+  }, [])
+
   return (
     <div className="relative w-full h-screen">
-      <Link to={`/profile/${routeId}`}>
-        <div className="w-14 text-center h-14 absolute top-20 left-5 z-50 flex items-center justify-center">
-          <img
-            src={process.env.PUBLIC_URL + "/images/Logo/profile.png" || "/placeholder.svg"}
-            alt="profile logo"
-            className="rounded-full"
-          />
-        </div>
-      </Link>
+      {/* Map controls - moved to the right side for better mobile ergonomics */}
+      <div
+        ref={controlsRef}
+        className="absolute top-1/2 transform -translate-y-1/2 right-5 z-50 md:right-8 map-controls"
+      >
+        {/* Profile button - now part of the vertical stack */}
+        <Link to={`/profile/${routeId}`}>
+          <div className="map-control-btn bg-green-600 hover:bg-green-700 transition-all">
+            <FontAwesomeIcon icon={faUser} className="text-lg" />
+          </div>
+        </Link>
 
-      <div className="absolute top-2/4 left-5 text-4xl z-50 text-center space-y-4 text-white">
-        <div className="cursor-pointer" onClick={handleCenterOnUser}>
-          <FontAwesomeIcon icon={faLocationCrosshairs} className="bg-[#1D8F34] rounded-full p-2" />
+        <div className={`map-control-btn ${userLocation ? "" : "opacity-70"}`} onClick={handleCenterOnUser}>
+          <FontAwesomeIcon icon={faLocationCrosshairs} className="text-lg" />
         </div>
-        <div className="cursor-pointer" onClick={handleCenterOnBus}>
-          <FontAwesomeIcon icon={faBus} className="bg-[#1D8F34] rounded-full p-2" />
+
+        <div className={`map-control-btn ${isBusListPanelOpen ? "active" : ""}`} onClick={toggleBusListPanel}>
+          <FontAwesomeIcon icon={faBus} className="text-lg" />
         </div>
-        <div className="cursor-pointer" onClick={handleCenterOnRoute}>
-          <FontAwesomeIcon icon={faRoute} className="bg-[#1D8F34] rounded-full p-2" />
+
+        <div className="map-control-btn" onClick={handleCenterOnRoute}>
+          <FontAwesomeIcon icon={faRoute} className="text-lg" />
         </div>
-        <div className="cursor-pointer">
-          <FontAwesomeIcon icon={faCircleStop} className="bg-[#1D8F34] rounded-full p-2" />
+
+        <div className="map-control-btn">
+          <FontAwesomeIcon icon={faCircleStop} className="text-lg" />
         </div>
+
+        {/* Bus Routes Button - added to the vertical stack */}
+        <Link to="/bus-route">
+          <div ref={busRouteButtonRef} className="map-control-btn bg-green-600 hover:bg-green-700 transition-all">
+            <FontAwesomeIcon icon={faList} className="text-lg" />
+          </div>
+        </Link>
       </div>
 
       <MapContainer
@@ -847,17 +972,33 @@ export default function BasicMap() {
         <MapController center={center} shouldCenter={shouldCenterOnBus} />
       </MapContainer>
 
-      {/* Bus Information Card */}
-      <BusInfoCard
-        bus={selectedBus}
-        route={route}
-        stop={stop}
-        onPrevBus={handlePrevBus}
-        onNextBus={handleNextBus}
-        buses={buses}
+      {/* Bus Information Card - only show when panel is closed */}
+      {!isBusListPanelOpen && (
+        <BusInfoCard
+          bus={selectedBus}
+          route={route}
+          stop={stop}
+          onPrevBus={handlePrevBus}
+          onNextBus={handleNextBus}
+          buses={buses}
+        />
+      )}
+
+      {/* Bus List Panel */}
+      <BusListPanel
+        routeId={routeId}
+        isOpen={isBusListPanelOpen}
+        onClose={closeBusListPanel}
+        getRouteByid={getRouteByid}
+        getStopByRouteId={getStopByRouteId}
+        getBusByRouteId={getBusByRouteId}
       />
 
-      {error && <div className="absolute top-5 left-5 bg-red-500 text-white p-2 rounded">{error}</div>}
+      {error && (
+        <div className="absolute top-20 left-5 md:top-24 md:left-8 bg-red-500 text-white p-2 rounded-lg shadow-md">
+          {error}
+        </div>
+      )}
     </div>
   )
 }
