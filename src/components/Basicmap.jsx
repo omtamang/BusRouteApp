@@ -59,6 +59,28 @@ const iconEnd = new L.Icon({
   shadowSize: [41, 41],
 })
 
+// Create a custom icon for bus stops
+const iconBusStop = new L.Icon({
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  iconSize: [20, 32], // Slightly smaller than other markers
+  iconAnchor: [10, 32],
+  popupAnchor: [1, -30],
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  shadowSize: [32, 32],
+})
+
+// Create a custom divIcon for bus stops
+const createBusStopIcon = () => {
+  return L.divIcon({
+    html: `<div class="flex items-center justify-center w-6 h-6 bg-yellow-500 rounded-full border-2 border-white shadow-md">
+      <div class="w-2 h-2 bg-white rounded-full"></div>
+    </div>`,
+    className: "",
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  })
+}
+
 // Updated bus icon without background, ready for rotation
 const createBusIcon = (busId, rotation = 0, isSelected = false) => {
   const uniqueId = `bus-icon-${busId}`
@@ -154,10 +176,12 @@ function calculateRoadDirection(position, routeCoordinates) {
 function BusInfoCard({ bus, route, stop, onPrevBus, onNextBus, buses }) {
   if (!bus) return null
 
+  console.log(bus);
+
   const busNo = bus.busNo || `Bus ${bus.busId || "Unknown"}`
   const busName = bus.name || "NepaGo"
   const busSpeed = Number.parseFloat(bus.speed) || 0
-  const nextStop = stop?.name || "Jawalakhel"
+  const nextStop = bus.nextStop || "Jawalakhel"
   const arrivalTime = bus.approximate_arrival_time || "6 minute"
   const routeInfo = route ? `${route.route_name || route.start_name + " - " + route.end_name}` : "Unknown Route"
 
@@ -197,7 +221,7 @@ function BusInfoCard({ bus, route, stop, onPrevBus, onNextBus, buses }) {
               <div className="text-sm text-gray-600">Next Stop: {nextStop}</div>
               <div className="flex justify-center items-center mt-1">
                 <div className="text-sm text-gray-600">Approx. Arrival Time:</div>
-                <div className="ml-1 font-medium">{arrivalTime}</div>
+                <div className="ml-1 font-medium">{arrivalTime} minutes</div>
               </div>
             </div>
 
@@ -214,6 +238,24 @@ function BusInfoCard({ bus, route, stop, onPrevBus, onNextBus, buses }) {
         </div>
       </div>
     </div>
+  )
+}
+
+// Bus Stop component to render each stop on the map
+function BusStop({ stop }) {
+  const stopId = stop.stop_id
+  const position = [stop.lat, stop.lng]
+  const stopName = stop.stop_name
+
+  return (
+    <Marker position={position} icon={createBusStopIcon()} zIndexOffset={800}>
+      <Popup>
+        <div className="p-2">
+          <strong className="font-bold text-gray-800">{stopName}</strong>
+          <div className="text-sm text-gray-600">Stop ID: {stopId}</div>
+        </div>
+      </Popup>
+    </Marker>
   )
 }
 
@@ -402,7 +444,7 @@ function RoutingMachine({ onSelectBus, selectedBusId }) {
   const map = useMap()
   const [routeCoordinates, setRouteCoordinates] = useState([])
   const [route, setRoute] = useState(null)
-  const [stop, setStop] = useState(null)
+  const [stops, setStops] = useState([])
   const [buses, setBuses] = useState([])
   const { routeId } = useParams()
   const prevBusesRef = useRef([])
@@ -413,16 +455,23 @@ function RoutingMachine({ onSelectBus, selectedBusId }) {
     async function fetchRouteData() {
       try {
         const response = await getRouteByid(routeId)
-        const res = await getStopByRouteId(routeId)
-        const re = await getBusByRouteId(routeId)
-        console.log("API Response:", re)
+        const stopsResponse = await getStopByRouteId(routeId)
+        const busesResponse = await getBusByRouteId(routeId)
+
+        console.log("API Response:", busesResponse)
         setRoute(response.data)
-        setStop(res.data)
+
+        // Handle stops data
+        if (stopsResponse && stopsResponse.data) {
+          console.log("Stops data:", stopsResponse.data)
+          const stopsData = Array.isArray(stopsResponse.data) ? stopsResponse.data : [stopsResponse.data]
+          setStops(stopsData)
+        }
 
         // Check if the API returned bus data in the expected format
-        if (re && re.data) {
-          console.log("Setting bus data:", re.data)
-          const busData = Array.isArray(re.data) ? re.data : [re.data]
+        if (busesResponse && busesResponse.data) {
+          console.log("Setting bus data:", busesResponse.data)
+          const busData = Array.isArray(busesResponse.data) ? busesResponse.data : [busesResponse.data]
           setBuses(busData)
           prevBusesRef.current = busData
 
@@ -431,7 +480,7 @@ function RoutingMachine({ onSelectBus, selectedBusId }) {
             onSelectBus(busData[0])
           }
         } else {
-          console.error("Invalid bus data format:", re)
+          console.error("Invalid bus data format:", busesResponse)
         }
       } catch (error) {
         console.error("Error fetching route:", error)
@@ -540,6 +589,42 @@ function RoutingMachine({ onSelectBus, selectedBusId }) {
     }
   }, [route, buses, onSelectBus, selectedBusId])
 
+  // For debugging - add test stops if none are available
+  useEffect(() => {
+    if (route && (!stops || stops.length === 0)) {
+      console.log("No stop data found, adding test stops for debugging")
+      // This is just for debugging - will be removed in production
+      const testStops = [
+        {
+          stop_id: "S001",
+          lat: Number.parseFloat(route.start_lat) + 0.002,
+          lng: Number.parseFloat(route.start_lng) + 0.002,
+          stop_name: "Sundarijal Stop",
+        },
+        {
+          stop_id: "S002",
+          lat: Number.parseFloat(route.start_lat) + 0.004,
+          lng: Number.parseFloat(route.start_lng) + 0.004,
+          stop_name: "Jorpati",
+        },
+        {
+          stop_id: "S003",
+          lat: Number.parseFloat(route.start_lat) + 0.006,
+          lng: Number.parseFloat(route.start_lng) + 0.006,
+          stop_name: "Chabahil",
+        },
+        {
+          stop_id: "S004",
+          lat: Number.parseFloat(route.end_lat) - 0.002,
+          lng: Number.parseFloat(route.end_lng) - 0.002,
+          stop_name: "Ratnapark Stop",
+        },
+      ]
+      console.log("Adding test stops:", testStops)
+      setStops(testStops)
+    }
+  }, [route, stops])
+
   // Function to reset the map view to show the entire route
   const resetMapToRouteBounds = useCallback(() => {
     if (routeBoundsRef.current) {
@@ -563,6 +648,9 @@ function RoutingMachine({ onSelectBus, selectedBusId }) {
       <Marker position={[route.end_lat, route.end_lng]} icon={iconEnd} zIndexOffset={1000}>
         <Popup>End: {route.end_name || "Ratnapark"}</Popup>
       </Marker>
+
+      {/* Render each bus stop as a separate marker component */}
+      {stops && stops.length > 0 && stops.map((stop) => <BusStop key={stop.stop_id} stop={stop} />)}
 
       {/* Render each bus as a separate marker component */}
       {buses &&
@@ -623,6 +711,7 @@ export default function BasicMap() {
   const [shouldCenterOnBus, setShouldCenterOnBus] = useState(false)
   const { routeId } = useParams()
   const [route, setRoute] = useState(null)
+  const [stops, setStops] = useState([])
   const [stop, setStop] = useState(null)
   const mapRef = useRef(null)
 
@@ -647,6 +736,13 @@ export default function BasicMap() {
 
         if (stopResponse && stopResponse.data) {
           setStop(stopResponse.data)
+
+          // Handle stops data for mapping
+          if (Array.isArray(stopResponse.data)) {
+            setStops(stopResponse.data)
+          } else {
+            setStops([stopResponse.data])
+          }
         }
 
         if (busResponse && busResponse.data) {
