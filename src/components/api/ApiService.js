@@ -41,3 +41,11 @@ export const addUser = (passenger) => axios.post(`http://localhost:8080/add-user
 export const updateUser = (passenger, passengerId) => axios.put(`http://localhost:8080/update-user/${passengerId}`, passenger)
 
 export const getBusByRouteId = (routeId) => axios.get(`http://localhost:8080/get-route/${routeId}/buses`)
+
+export const getBus = () => axios.get("http://localhost:8080/get-bus")
+
+export const addBus = (bus, routeId) => axios.post(`http://localhost:8080/add-bus/${routeId}`, bus)
+
+export const deleteBus = (busId) => axios.delete(`http://localhost:8080/bus/delete/${busId}`)
+
+export const updateBus = (bus, routeId, busId) => axios.put(`http://localhost:8080/bus/${busId}/update/${routeId}`, bus)

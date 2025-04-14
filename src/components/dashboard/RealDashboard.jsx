@@ -5,6 +5,7 @@ import { gsap } from "gsap"
 import Dashboard from './Dashboard'
 import StopDashboard from "./StopDashboard"
 import UserDashboard from "./UserDashboard"
+import BusDashboard from "./BusDashboard"
 
 // Custom simple components instead of shadcn/ui
 const Card = ({ children, className = "" }) => (
@@ -445,17 +446,7 @@ export default function RealDashboard() {
       case "bus":
         return (
           <div className="dashboard-content">
-            <Card>
-              <CardHeader>
-                <CardTitle>Bus Management</CardTitle>
-                <CardDescription>Your bus components will be displayed here</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg border-gray-200">
-                  <p className="text-gray-500">Bus components will be rendered here</p>
-                </div>
-              </CardContent>
-            </Card>
+            <BusDashboard/>
           </div>
         )
       case "user":
