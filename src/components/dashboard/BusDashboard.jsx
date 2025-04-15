@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { deleteBus, deleteUser, getBus, getUsers } from "../api/ApiService"
+import { deleteBus, getBus } from "../api/ApiService"
 import gsap from "gsap"
 import AddBus from "./AddBus"
 import EditBus from "./EditBus"
@@ -17,6 +17,8 @@ export default function BusDashboard({ darkMode }) {
   const [busToEdit, setBusToEdit] = useState(null)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredBus, setFilteredBus] = useState([])
 
   async function getAllBus() {
     try {
@@ -106,6 +108,25 @@ export default function BusDashboard({ darkMode }) {
     })
   }
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value)
+  }
+
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredBus(bus)
+    } else {
+      const lowercasedQuery = searchQuery.toLowerCase()
+      const filtered = bus.filter(
+        (buses) =>
+          (buses.busNo && buses.busNo.toLowerCase().includes(lowercasedQuery)) ||
+          (buses.deviceId && buses.deviceId.toLowerCase().includes(lowercasedQuery)) ||
+          (buses.nextStop && buses.nextStop.toLowerCase().includes(lowercasedQuery)),
+      )
+      setFilteredBus(filtered)
+    }
+  }, [searchQuery, bus])
+
   async function deleteBusById() {
     try {
       if (!busToDelete) return
@@ -192,7 +213,8 @@ export default function BusDashboard({ darkMode }) {
                     type="text"
                     id="simple-search"
                     placeholder="Search for users"
-                    required=""
+                    value={searchQuery}
+                    onChange={handleSearchChange}
                     className={`border text-sm rounded-none block w-full pl-10 p-2 ${
                       darkMode
                         ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-primary-500"
@@ -428,14 +450,14 @@ export default function BusDashboard({ darkMode }) {
                       Loading route data...
                     </td>
                   </tr>
-                ) : bus.length === 0 ? (
+                ) : filteredBus.length === 0 ? (
                   <tr className={`border-b ${darkMode ? "border-gray-600" : ""}`}>
                     <td colSpan="9" className="px-4 py-3 text-center">
-                      No bus found
+                      {searchQuery ? "No buses found matching your search" : "No bus found"}
                     </td>
                   </tr>
                 ) : (
-                  bus.map((buses, index) => (
+                  filteredBus.map((buses, index) => (
                     <tr
                       key={index}
                       className={`border-b ${darkMode ? "border-gray-600 hover:bg-gray-700" : "hover:bg-gray-100"}`}
@@ -491,7 +513,7 @@ export default function BusDashboard({ darkMode }) {
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
                       >
-                        {buses.status ? 'Yes' : 'No'}
+                        {buses.status ? "Yes" : "No"}
                       </td>
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
@@ -571,10 +593,13 @@ export default function BusDashboard({ darkMode }) {
               Showing
               <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
                 {" "}
-                {bus.length > 0 ? `1-${Math.min(bus.length, 10)}` : "0"}{" "}
+                {filteredBus.length > 0 ? `1-${Math.min(filteredBus.length, 10)}` : "0"}{" "}
               </span>
               of
-              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}> {bus.length} </span>
+              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
+                {" "}
+                {filteredBus.length}{" "}
+              </span>
             </span>
             <ul className="inline-flex items-stretch -space-x-px">
               <li>
@@ -762,4 +787,3 @@ export default function BusDashboard({ darkMode }) {
     </section>
   )
 }
-

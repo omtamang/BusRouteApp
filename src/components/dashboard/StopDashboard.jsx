@@ -17,15 +17,18 @@ export default function StopDashboard({ darkMode }) {
   const [stopToEdit, setStopToEdit] = useState(null)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredStops, setFilteredStops] = useState([])
 
   async function getAllStops() {
     try {
       const response = await getStops()
       setStops(response.data)
+      setFilteredStops(response.data)
       setLoading(false)
-      console.log("Routes loaded:", response.data)
+      console.log("Stops loaded:", response.data)
     } catch (error) {
-      console.error("Error fetching routes:", error)
+      console.error("Error fetching stops:", error)
       setLoading(false)
     }
   }
@@ -33,6 +36,27 @@ export default function StopDashboard({ darkMode }) {
   useEffect(() => {
     getAllStops()
   }, []) // Runs only on component mount (load)
+
+  // Filter stops based on search query
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredStops(stops)
+    } else {
+      const lowercasedQuery = searchQuery.toLowerCase()
+      const filtered = stops.filter(
+        (stop) =>
+          (stop.stop_name && stop.stop_name.toLowerCase().includes(lowercasedQuery)) ||
+          (stop.lat && stop.lat.toString().includes(lowercasedQuery)) ||
+          (stop.lng && stop.lng.toString().includes(lowercasedQuery)),
+      )
+      setFilteredStops(filtered)
+    }
+  }, [searchQuery, stops])
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value)
+  }
 
   // Notification animation effect
   useEffect(() => {
@@ -110,13 +134,13 @@ export default function StopDashboard({ darkMode }) {
     try {
       if (!stopToDelete) return
 
-      console.log("Deleting route with ID:", stopToDelete.stop_id)
+      console.log("Deleting stop with ID:", stopToDelete.stop_id)
       const response = await deleteStopById(stopToDelete.stop_id)
 
-      // Update the UI by removing the deleted route
+      // Update the UI by removing the deleted stop
       setStops(stops.filter((stop) => stop.stop_id !== stopToDelete.stop_id))
 
-      // Show success notification with route ID and name
+      // Show success notification with stop ID and name
       setNotification({
         show: true,
         message: `Stop "${stopToDelete.stop_name}" (ID: ${stopToDelete.stop_id}) successfully deleted`,
@@ -141,7 +165,7 @@ export default function StopDashboard({ darkMode }) {
     try {
       await deleteStop()
     } catch (error) {
-      console.error("Error deleting route:", error)
+      console.error("Error deleting stop:", error)
     }
   }
 
@@ -191,8 +215,9 @@ export default function StopDashboard({ darkMode }) {
                   <input
                     type="text"
                     id="simple-search"
-                    placeholder="Search for routes"
-                    required=""
+                    placeholder="Search for stops"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
                     className={`border text-sm rounded-none block w-full pl-10 p-2 ${
                       darkMode
                         ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-primary-500"
@@ -398,7 +423,7 @@ export default function StopDashboard({ darkMode }) {
                   <th scope="col" className="p-4">
                     Longitude
                   </th>
-                  
+
                   <th scope="col" className="p-4">
                     Actions
                   </th>
@@ -408,17 +433,17 @@ export default function StopDashboard({ darkMode }) {
                 {loading ? (
                   <tr className={`border-b ${darkMode ? "border-gray-600" : ""}`}>
                     <td colSpan="9" className="px-4 py-3 text-center">
-                      Loading route data...
+                      Loading stop data...
                     </td>
                   </tr>
-                ) : stops.length === 0 ? (
+                ) : filteredStops.length === 0 ? (
                   <tr className={`border-b ${darkMode ? "border-gray-600" : ""}`}>
                     <td colSpan="9" className="px-4 py-3 text-center">
-                      No stops found
+                      {searchQuery ? "No stops found matching your search" : "No stops found"}
                     </td>
                   </tr>
                 ) : (
-                  stops.map((stop, index) => (
+                  filteredStops.map((stop, index) => (
                     <tr
                       key={index}
                       className={`border-b ${darkMode ? "border-gray-600 hover:bg-gray-700" : "hover:bg-gray-100"}`}
@@ -452,7 +477,7 @@ export default function StopDashboard({ darkMode }) {
                       >
                         {stop.lat}
                       </td>
-                      
+
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
                       >
@@ -527,10 +552,13 @@ export default function StopDashboard({ darkMode }) {
               Showing
               <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
                 {" "}
-                {stops.length > 0 ? `1-${Math.min(stops.length, 10)}` : "0"}{" "}
+                {filteredStops.length > 0 ? `1-${Math.min(filteredStops.length, 10)}` : "0"}{" "}
               </span>
               of
-              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}> {stops.length} </span>
+              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
+                {" "}
+                {filteredStops.length}{" "}
+              </span>
             </span>
             <ul className="inline-flex items-stretch -space-x-px">
               <li>
@@ -671,7 +699,7 @@ export default function StopDashboard({ darkMode }) {
                 />
               </svg>
               <p className={`mb-4 ${darkMode ? "text-gray-300" : "text-gray-500"}`}>
-                Are you sure you want to delete this route?
+                Are you sure you want to delete this stop?
               </p>
               <div className="flex justify-center items-center space-x-4">
                 <button
@@ -701,12 +729,12 @@ export default function StopDashboard({ darkMode }) {
         </div>
       )}
 
-      {/* Add route modal */}
+      {/* Add stop modal */}
       {showAddPopup && (
         <AddStop onClose={() => setShowAddPopup(false)} onStopAdded={handleStopAdded} darkMode={darkMode} />
       )}
 
-      {/* Edit route modal */}
+      {/* Edit stop modal */}
       {showEditPopup && (
         <EditStop
           onClose={() => setShowEditPopup(false)}
@@ -718,4 +746,3 @@ export default function StopDashboard({ darkMode }) {
     </section>
   )
 }
-

@@ -17,11 +17,14 @@ export default function Dashboard({ darkMode }) {
   const [routeToEdit, setRouteToEdit] = useState(null)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredRoutes, setFilteredRoutes] = useState([])
 
   async function getAllRoutes() {
     try {
       const response = await getRoutes()
       setRoutes(response.data)
+      setFilteredRoutes(response.data)
       setLoading(false)
       console.log("Routes loaded:", response.data)
     } catch (error) {
@@ -33,6 +36,29 @@ export default function Dashboard({ darkMode }) {
   useEffect(() => {
     getAllRoutes()
   }, []) // Runs only on component mount (load)
+
+  // Filter routes based on search query
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredRoutes(routes)
+    } else {
+      const lowercasedQuery = searchQuery.toLowerCase()
+      const filtered = routes.filter(
+        (route) =>
+          (route.route_name && route.route_name.toLowerCase().includes(lowercasedQuery)) ||
+          (route.start_lat && route.start_lat.toString().includes(lowercasedQuery)) ||
+          (route.start_lng && route.start_lng.toString().includes(lowercasedQuery)) ||
+          (route.end_lat && route.end_lat.toString().includes(lowercasedQuery)) ||
+          (route.end_lng && route.end_lng.toString().includes(lowercasedQuery)),
+      )
+      setFilteredRoutes(filtered)
+    }
+  }, [searchQuery, routes])
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value)
+  }
 
   // Notification animation effect
   useEffect(() => {
@@ -192,7 +218,8 @@ export default function Dashboard({ darkMode }) {
                     type="text"
                     id="simple-search"
                     placeholder="Search for routes"
-                    required=""
+                    value={searchQuery}
+                    onChange={handleSearchChange}
                     className={`border text-sm rounded-none block w-full pl-10 p-2 ${
                       darkMode
                         ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-primary-500"
@@ -422,14 +449,14 @@ export default function Dashboard({ darkMode }) {
                       Loading route data...
                     </td>
                   </tr>
-                ) : routes.length === 0 ? (
+                ) : filteredRoutes.length === 0 ? (
                   <tr className={`border-b ${darkMode ? "border-gray-600" : ""}`}>
                     <td colSpan="9" className="px-4 py-3 text-center">
-                      No routes found
+                      {searchQuery ? "No routes found matching your search" : "No routes found"}
                     </td>
                   </tr>
                 ) : (
-                  routes.map((route, index) => (
+                  filteredRoutes.map((route, index) => (
                     <tr
                       key={index}
                       className={`border-b ${darkMode ? "border-gray-600 hover:bg-gray-700" : "hover:bg-gray-100"}`}
@@ -559,10 +586,13 @@ export default function Dashboard({ darkMode }) {
               Showing
               <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
                 {" "}
-                {routes.length > 0 ? `1-${Math.min(routes.length, 10)}` : "0"}{" "}
+                {filteredRoutes.length > 0 ? `1-${Math.min(filteredRoutes.length, 10)}` : "0"}{" "}
               </span>
               of
-              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}> {routes.length} </span>
+              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
+                {" "}
+                {filteredRoutes.length}{" "}
+              </span>
             </span>
             <ul className="inline-flex items-stretch -space-x-px">
               <li>
@@ -750,4 +780,3 @@ export default function Dashboard({ darkMode }) {
     </section>
   )
 }
-

@@ -12,7 +12,7 @@ export default function EditUser({ onClose, onRouteUpdated, busData }) {
     busNo: "",
     deviceId: "",
     verified: "true",
-    routeId: ""
+    routeId: "",
   })
 
   const [routes, setRoutes] = useState([])
@@ -20,12 +20,13 @@ export default function EditUser({ onClose, onRouteUpdated, busData }) {
   // Update initialValues when routeData changes
   useEffect(() => {
     if (busData) {
-        console.log(busData)
+      console.log(busData)
       setInitialValues({
         busId: busData.busId,
         busNo: busData.busNo || "",
         deviceId: busData.deviceId || "",
         verified: busData.verified?.toString() || "true", // Convert to string for select
+        routeId: busData.routeId || "", // Make sure routeId is included
       })
     }
   }, [busData])
@@ -39,7 +40,7 @@ export default function EditUser({ onClose, onRouteUpdated, busData }) {
     }
 
     try {
-        console.log(values.route_id)
+      console.log(values.routeId)
       const response = await updateBus(bus, values.routeId, busData.busId)
       onRouteUpdated(bus)
       onClose()
@@ -49,18 +50,18 @@ export default function EditUser({ onClose, onRouteUpdated, busData }) {
   }
 
   async function getRoute() {
-      try {
-        const re = await getRoutes()
-        console.log("Routes fetched:", re.data)
-        setRoutes(re.data)
-      } catch (error) {
-        console.error("Error fetching routes:", error)
-      }
+    try {
+      const re = await getRoutes()
+      console.log("Routes fetched:", re.data)
+      setRoutes(re.data)
+    } catch (error) {
+      console.error("Error fetching routes:", error)
     }
+  }
 
-    useEffect(() => {
-        getRoute()
-      }, [])
+  useEffect(() => {
+    getRoute()
+  }, [])
 
   // Custom component for the verified status dropdown
   const VerifiedStatusSelect = ({ field, form }) => (
@@ -203,10 +204,7 @@ export default function EditUser({ onClose, onRouteUpdated, busData }) {
                       />
                     </fieldset>
                     <fieldset>
-                      <label
-                        htmlFor="busId"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
+                      <label htmlFor="busId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Bus Number
                       </label>
                       <Field
@@ -233,12 +231,11 @@ export default function EditUser({ onClose, onRouteUpdated, busData }) {
                     </fieldset>
 
                     <fieldset>
-                        <label htmlFor="routeId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Route
-                        </label>
-                        <Field name="routeId" component={RouteSelect} />
+                      <label htmlFor="routeId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Route
+                      </label>
+                      <Field name="routeId" component={RouteSelect} />
                     </fieldset>
-                    
 
                     <fieldset className="sm:col-span-2">
                       <label
@@ -293,4 +290,3 @@ export default function EditUser({ onClose, onRouteUpdated, busData }) {
     </>
   )
 }
-

@@ -17,15 +17,18 @@ export default function UserDashboard({ darkMode }) {
   const [userToEdit, setUserToEdit] = useState(null)
   const [notification, setNotification] = useState({ show: false, message: "", type: "" })
   const notificationRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredUsers, setFilteredUsers] = useState([])
 
   async function getAllUsers() {
     try {
       const response = await getUsers()
       setUsers(response.data)
+      setFilteredUsers(response.data)
       setLoading(false)
-      console.log("Routes loaded:", response.data)
+      console.log("Users loaded:", response.data)
     } catch (error) {
-      console.error("Error fetching routes:", error)
+      console.error("Error fetching users:", error)
       setLoading(false)
     }
   }
@@ -105,6 +108,26 @@ export default function UserDashboard({ darkMode }) {
       type: "success",
     })
   }
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value)
+  }
+
+  // Filter users based on search query
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredUsers(users)
+    } else {
+      const lowercasedQuery = searchQuery.toLowerCase()
+      const filtered = users.filter(
+        (user) =>
+          (user.passenger_name && user.passenger_name.toLowerCase().includes(lowercasedQuery)) ||
+          (user.email && user.email.toLowerCase().includes(lowercasedQuery)) ||
+          (user.password && user.password.toLowerCase().includes(lowercasedQuery)),
+      )
+      setFilteredUsers(filtered)
+    }
+  }, [searchQuery, users])
 
   async function deleteUserById() {
     try {
@@ -192,7 +215,8 @@ export default function UserDashboard({ darkMode }) {
                     type="text"
                     id="simple-search"
                     placeholder="Search for users"
-                    required=""
+                    value={searchQuery}
+                    onChange={handleSearchChange}
                     className={`border text-sm rounded-none block w-full pl-10 p-2 ${
                       darkMode
                         ? "bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-primary-500 focus:border-primary-500"
@@ -410,17 +434,17 @@ export default function UserDashboard({ darkMode }) {
                 {loading ? (
                   <tr className={`border-b ${darkMode ? "border-gray-600" : ""}`}>
                     <td colSpan="9" className="px-4 py-3 text-center">
-                      Loading route data...
+                      Loading user data...
                     </td>
                   </tr>
-                ) : users.length === 0 ? (
+                ) : filteredUsers.length === 0 ? (
                   <tr className={`border-b ${darkMode ? "border-gray-600" : ""}`}>
                     <td colSpan="9" className="px-4 py-3 text-center">
-                      No routes found
+                      {searchQuery ? "No users found matching your search" : "No users found"}
                     </td>
                   </tr>
                 ) : (
-                  users.map((user, index) => (
+                  filteredUsers.map((user, index) => (
                     <tr
                       key={index}
                       className={`border-b ${darkMode ? "border-gray-600 hover:bg-gray-700" : "hover:bg-gray-100"}`}
@@ -461,7 +485,7 @@ export default function UserDashboard({ darkMode }) {
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
                       >
-                        {user.verified ? 'Yes' : 'No'}
+                        {user.verified ? "Yes" : "No"}
                       </td>
                       <td
                         className={`px-4 py-3 font-medium whitespace-nowrap ${darkMode ? "text-white" : "text-gray-900"}`}
@@ -531,10 +555,13 @@ export default function UserDashboard({ darkMode }) {
               Showing
               <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
                 {" "}
-                {users.length > 0 ? `1-${Math.min(users.length, 10)}` : "0"}{" "}
+                {filteredUsers.length > 0 ? `1-${Math.min(filteredUsers.length, 10)}` : "0"}{" "}
               </span>
               of
-              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}> {users.length} </span>
+              <span className={`font-semibold ${darkMode ? "text-white" : "text-gray-900"}`}>
+                {" "}
+                {filteredUsers.length}{" "}
+              </span>
             </span>
             <ul className="inline-flex items-stretch -space-x-px">
               <li>
@@ -675,7 +702,7 @@ export default function UserDashboard({ darkMode }) {
                 />
               </svg>
               <p className={`mb-4 ${darkMode ? "text-gray-300" : "text-gray-500"}`}>
-                Are you sure you want to delete this route?
+                Are you sure you want to delete this user?
               </p>
               <div className="flex justify-center items-center space-x-4">
                 <button
@@ -722,4 +749,3 @@ export default function UserDashboard({ darkMode }) {
     </section>
   )
 }
-
