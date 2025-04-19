@@ -300,7 +300,9 @@ export default function Profile() {
                     darkMode ? "bg-gray-700/50 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"
                   } transition-colors cursor-pointer`}
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center" onClick={() => {
+                    navigate(`/notification/${routeId}`)
+                  }}>
                     <div
                       className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center ${
                         darkMode ? "bg-green-900" : "bg-green-100"
