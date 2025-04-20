@@ -6,16 +6,24 @@ import { Link } from "react-router-dom"
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useParams } from "react-router-dom"
-import { getPassenger, getReminder } from "../api/ApiService"
+import { getPassenger, getReminder, getRoutes, getStopByRouteId, setReminder, updateReminder } from "../api/ApiService"
 
 export default function NotificationSettings() {
   const [notifications, setNotifications] = useState([])
   const [user, setUser] = useState("")
+  const [routes, setRoutes] = useState([])
+  const [stops, setStops] = useState([])
+  const [selectedRouteId, setSelectedRouteId] = useState("")
+  const [selectedStopId, setSelectedStopId] = useState("")
+  const [isEditing, setIsEditing] = useState(false)
+  const [currentEditId, setCurrentEditId] = useState(null)
 
   const [newNotification, setNewNotification] = useState({
     time: "",
     active: true,
     label: "",
+    route_id: "",
+    stop_id: "",
   })
 
   const [isAdding, setIsAdding] = useState(false)
@@ -23,31 +31,188 @@ export default function NotificationSettings() {
   const formRef = useRef(null)
   const { routeId } = useParams()
 
-  async function getNotification(){
-
+  async function getNotification() {
     async function getUser() {
-        try{
-            const response = await getPassenger()
-            setUser(response.data)
-        }catch(err){
-            console.log(err)
-        }
-    }
-    getUser()
-
-    try{
-        const response = await getReminder(user)
-        console.log(response)
-        setNotifications(response.data)
-        console.log(notifications)
-    }catch(err){
+      try {
+        const response = await getPassenger()
+        setUser(response.data)
+      } catch (err) {
         console.log(err)
+      }
+    }
+    await getUser()
+
+    try {
+      const response = await getReminder(user)
+      setNotifications(response.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  async function getAllRoutes() {
+    try {
+      const response = await getRoutes()
+      setRoutes(response.data)
+    } catch (err) {
+      console.log(err)
     }
   }
 
   useEffect(() => {
+    getAllRoutes()
     getNotification()
-  }, [])
+  }, [user])
+
+  async function getStopsByRouteId(routeId) {
+    if (!routeId) return
+
+    try {
+      const response = await getStopByRouteId(routeId)
+      setStops(response.data)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  // When route selection changes, fetch stops
+  useEffect(() => {
+    if (selectedRouteId) {
+      getStopsByRouteId(selectedRouteId)
+
+      // Update the new notification with the selected route
+      setNewNotification((prev) => ({
+        ...prev,
+        route_id: selectedRouteId,
+        stop_id: "", // Reset stop when route changes
+      }))
+    }
+  }, [selectedRouteId])
+
+  // When stop selection changes
+  useEffect(() => {
+    if (selectedStopId) {
+      setNewNotification((prev) => ({
+        ...prev,
+        stop_id: selectedStopId,
+      }))
+    }
+  }, [selectedStopId])
+
+  async function handleAddReminder(e) {
+    e.preventDefault()
+
+    if (!newNotification.time || !newNotification.label || !newNotification.route_id || !newNotification.stop_id) {
+      alert("Please fill all required fields")
+      return
+    }
+
+    const reminderObject = {
+      label: newNotification.label,
+      time: newNotification.time,
+      status: newNotification.active,
+    }
+
+    try {
+      const response = await setReminder(newNotification.route_id, newNotification.stop_id, user, reminderObject)
+
+      // Add the new notification to the list
+      const newId = response.data.notification_id || Date.now().toString()
+      const newItem = {
+        ...newNotification,
+        id: newId,
+        notification_id: newId,
+      }
+
+      setNotifications((prev) => [...prev, newItem])
+
+      // Reset form
+      setNewNotification({
+        time: "",
+        active: true,
+        label: "",
+        route_id: "",
+        stop_id: "",
+      })
+      setSelectedRouteId("")
+      setSelectedStopId("")
+      setIsAdding(false)
+
+      // Animate the new item
+      setTimeout(() => {
+        const newElement = document.getElementById(`notification-${newId}`)
+        if (newElement) {
+          gsap.fromTo(newElement, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" })
+        }
+      }, 10)
+    } catch (err) {
+      console.log(err)
+      alert("Failed to add reminder")
+    }
+  }
+
+  async function handleUpdateReminder(e) {
+    e.preventDefault()
+
+    if (
+      !currentEditId ||
+      !newNotification.time ||
+      !newNotification.label ||
+      !newNotification.route_id ||
+      !newNotification.stop_id
+    ) {
+      alert("Please fill all required fields")
+      return
+    }
+
+    const reminderObject = {
+      label: newNotification.label,
+      time: newNotification.time,
+      status: newNotification.active,
+    }
+
+    try {
+      const response = await updateReminder(
+        newNotification.route_id,
+        newNotification.stop_id,
+        user,
+        currentEditId,
+        reminderObject,
+      )
+
+      // Update the notification in the list
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.notification_id === currentEditId
+            ? {
+                ...notification,
+                label: newNotification.label,
+                time: newNotification.time,
+                active: newNotification.active,
+                route_id: newNotification.route_id,
+                stop_id: newNotification.stop_id,
+              }
+            : notification,
+        ),
+      )
+
+      // Reset form
+      setNewNotification({
+        time: "",
+        active: true,
+        label: "",
+        route_id: "",
+        stop_id: "",
+      })
+      setSelectedRouteId("")
+      setSelectedStopId("")
+      setIsEditing(false)
+      setCurrentEditId(null)
+    } catch (err) {
+      console.log(err)
+      alert("Failed to update reminder")
+    }
+  }
 
   // Animation when component mounts
   useEffect(() => {
@@ -64,9 +229,9 @@ export default function NotificationSettings() {
     }
   }, [])
 
-  // Animation for adding/removing notifications
+  // Animation for adding/editing notifications
   useEffect(() => {
-    if (isAdding) {
+    if (isAdding || isEditing) {
       gsap.fromTo(
         formRef.current,
         { height: 0, opacity: 0 },
@@ -80,31 +245,57 @@ export default function NotificationSettings() {
         ease: "power2.in",
       })
     }
-  }, [isAdding])
+  }, [isAdding, isEditing])
 
-  const handleToggle = (id) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === id ? { ...notification, active: !notification.active } : notification,
-      ),
-    )
+  const handleToggle = async (id) => {
+    // Find the notification
+    const notification = notifications.find((n) => n.notification_id === id)
+    if (!notification) return
 
-    // Animate the toggle
-    const toggleElement = document.getElementById(`toggle-${id}`)
-    if (toggleElement) {
-      gsap.fromTo(toggleElement, { scale: 0.8 }, { scale: 1, duration: 0.2, ease: "elastic.out(1, 0.3)" })
+    // Toggle the status
+    const newStatus = !notification.active
+
+    const reminderObject = {
+      label: notification.label,
+      time: notification.time,
+      status: newStatus,
+    }
+
+    try {
+      // Update in the backend
+      await updateReminder(notification.route_id, notification.stop_id, user, id, reminderObject)
+
+      // Update in the UI
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.notification_id === id ? { ...notification, active: newStatus } : notification,
+        ),
+      )
+
+      // Animate the toggle
+      const toggleElement = document.getElementById(`toggle-${id}`)
+      if (toggleElement) {
+        gsap.fromTo(toggleElement, { scale: 0.8 }, { scale: 1, duration: 0.2, ease: "elastic.out(1, 0.3)" })
+      }
+    } catch (err) {
+      console.log(err)
+      alert("Failed to update notification status")
     }
   }
 
   const handleTimeChange = (id, newTime) => {
     setNotifications((prev) =>
-      prev.map((notification) => (notification.id === id ? { ...notification, time: newTime } : notification)),
+      prev.map((notification) =>
+        notification.notification_id === id ? { ...notification, time: newTime } : notification,
+      ),
     )
   }
 
   const handleLabelChange = (id, newLabel) => {
     setNotifications((prev) =>
-      prev.map((notification) => (notification.id === id ? { ...notification, label: newLabel } : notification)),
+      prev.map((notification) =>
+        notification.notification_id === id ? { ...notification, label: newLabel } : notification,
+      ),
     )
   }
 
@@ -118,31 +309,47 @@ export default function NotificationSettings() {
         duration: 0.3,
         ease: "power2.in",
         onComplete: () => {
-          setNotifications((prev) => prev.filter((notification) => notification.id !== id))
+          setNotifications((prev) => prev.filter((notification) => notification.notification_id !== id))
         },
       })
     }
   }
 
-  const handleAddNew = (e) => {
-    e.preventDefault()
+  const handleEdit = (notification) => {
+    setNewNotification({
+      time: notification.time,
+      active: notification.active,
+      label: notification.label,
+      route_id: notification.route_id,
+      stop_id: notification.stop_id,
+    })
 
-    if (!newNotification.time || !newNotification.label) return
-
-    const newId = Date.now().toString()
-    const newItem = { ...newNotification, id: newId }
-
-    setNotifications((prev) => [...prev, newItem])
-    setNewNotification({ time: "", active: true, label: "" })
+    setSelectedRouteId(notification.route_id)
+    setSelectedStopId(notification.stop_id)
+    setCurrentEditId(notification.notification_id)
+    setIsEditing(true)
     setIsAdding(false)
 
-    // Animate the new item
-    setTimeout(() => {
-      const newElement = document.getElementById(`notification-${newId}`)
-      if (newElement) {
-        gsap.fromTo(newElement, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" })
-      }
-    }, 10)
+    // Fetch stops for the selected route
+    getStopsByRouteId(notification.route_id)
+
+    // Scroll to form
+    formRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  const cancelForm = () => {
+    setNewNotification({
+      time: "",
+      active: true,
+      label: "",
+      route_id: "",
+      stop_id: "",
+    })
+    setSelectedRouteId("")
+    setSelectedStopId("")
+    setIsAdding(false)
+    setIsEditing(false)
+    setCurrentEditId(null)
   }
 
   return (
@@ -150,16 +357,14 @@ export default function NotificationSettings() {
       {/* Header matching the design in the image */}
       <header className="flex items-center p-4 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center">
-                  <Link
-                    className={`text-xl hover:bg-opacity-10 hover:bg-black p-2 rounded-full transition-all`}
-                    to={`/profile/${routeId}`}
-                  >
-                    <FontAwesomeIcon icon={faArrowLeft} className="align-middle hover:scale-110 transition-transform" />
-                  </Link>
-                  <span className={"text-xl pl-2 md:pl-4 font-medium"}>
-                    Notification settings
-                  </span>
-                </div>
+          <Link
+            className={`text-xl hover:bg-opacity-10 hover:bg-black p-2 rounded-full transition-all`}
+            to={`/profile/${routeId}`}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="align-middle hover:scale-110 transition-transform" />
+          </Link>
+          <span className={"text-xl pl-2 md:pl-4 font-medium"}>Notification settings</span>
+        </div>
       </header>
 
       <div className="w-full max-w-6xl mx-auto p-4 md:p-8">
@@ -184,7 +389,22 @@ export default function NotificationSettings() {
                 <span className="text-sm text-gray-600">Inactive</span>
               </div>
               <button
-                onClick={() => setIsAdding(!isAdding)}
+                onClick={() => {
+                  setIsAdding(!isAdding)
+                  setIsEditing(false)
+                  setCurrentEditId(null)
+                  if (isEditing) {
+                    setNewNotification({
+                      time: "",
+                      active: true,
+                      label: "",
+                      route_id: "",
+                      stop_id: "",
+                    })
+                    setSelectedRouteId("")
+                    setSelectedStopId("")
+                  }
+                }}
                 className="flex items-center justify-center h-10 px-4 rounded-md bg-green-500 text-white hover:bg-green-600 transition-all duration-200 ease-in-out shadow-sm hover:shadow"
               >
                 <span className="text-lg mr-1">{isAdding ? "×" : "+"}</span>
@@ -193,20 +413,70 @@ export default function NotificationSettings() {
             </div>
           </div>
 
-          {/* Add new notification form */}
+          {/* Add/Edit notification form */}
           <form
             ref={formRef}
-            onSubmit={handleAddNew}
-            className={`mb-8 overflow-hidden ${isAdding ? "block" : "hidden"}`}
+            onSubmit={isEditing ? handleUpdateReminder : handleAddReminder}
+            className={`mb-8 overflow-hidden ${isAdding || isEditing ? "block" : "hidden"}`}
             style={{ height: 0, opacity: 0 }}
           >
-            <div className="bg-blue-50 p-4 md:p-6 rounded-lg border border-blue-100">
-              <h3 className="text-lg font-medium text-blue-800 mb-4">Add New Notification</h3>
+            <div
+              className={`p-4 md:p-6 rounded-lg border ${isEditing ? "bg-yellow-50 border-yellow-100" : "bg-blue-50 border-blue-100"}`}
+            >
+              <h3 className={`text-lg font-medium mb-4 ${isEditing ? "text-yellow-800" : "text-blue-800"}`}>
+                {isEditing ? "Edit Notification" : "Add New Notification"}
+              </h3>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label htmlFor="route-select" className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Route *
+                  </label>
+                  <select
+                    id="route-select"
+                    value={selectedRouteId}
+                    onChange={(e) => setSelectedRouteId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
+                    required
+                  >
+                    <option value="">Select a route</option>
+                    {routes.map((route) => (
+                      <option key={route.route_id} value={route.route_id}>
+                        {route.route_name || `Route ${route.route_id}`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="stop-select" className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Stop *
+                  </label>
+                  <select
+                    id="stop-select"
+                    value={selectedStopId}
+                    onChange={(e) => setSelectedStopId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm"
+                    disabled={!selectedRouteId || stops.length === 0}
+                    required
+                  >
+                    <option value="">Select a stop</option>
+                    {stops.map((stop) => (
+                      <option key={stop.stop_id} value={stop.stop_id}>
+                        {stop.stop_name || `Stop ${stop.stop_id}`}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedRouteId && stops.length === 0 && (
+                    <p className="text-sm text-red-500 mt-1">No stops available for this route</p>
+                  )}
+                </div>
+              </div>
 
               <div className="grid md:grid-cols-3 gap-4 mb-4">
                 <div className="md:col-span-1">
                   <label htmlFor="new-label" className="block text-sm font-medium text-gray-700 mb-1">
-                    Notification Label
+                    Notification Label *
                   </label>
                   <input
                     id="new-label"
@@ -221,7 +491,7 @@ export default function NotificationSettings() {
 
                 <div>
                   <label htmlFor="new-time" className="block text-sm font-medium text-gray-700 mb-1">
-                    Time (24-hour)
+                    Time (24-hour) *
                   </label>
                   <input
                     id="new-time"
@@ -257,16 +527,20 @@ export default function NotificationSettings() {
               <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setIsAdding(false)}
+                  onClick={cancelForm}
                   className="mr-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 ease-in-out"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm hover:shadow transition-all duration-200 ease-in-out"
+                  className={`px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 shadow-sm hover:shadow transition-all duration-200 ease-in-out ${
+                    isEditing
+                      ? "bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-500"
+                      : "bg-green-500 hover:bg-green-600 focus:ring-green-500"
+                  }`}
                 >
-                  Add Notification
+                  {isEditing ? "Update Notification" : "Add Notification"}
                 </button>
               </div>
             </div>
@@ -298,35 +572,51 @@ export default function NotificationSettings() {
             ) : (
               notifications.map((notification) => (
                 <div
-                  key={notification.id}
-                  id={`notification-${notification.id}`}
+                  key={notification.notification_id}
+                  id={`notification-${notification.notification_id}`}
                   className="notification-item bg-white rounded-lg p-4 border border-gray-200 shadow-sm hover:shadow transition-all duration-200 ease-in-out"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <input
                       type="text"
                       value={notification.label}
-                      onChange={(e) => handleLabelChange(notification.id, e.target.value)}
+                      onChange={(e) => handleLabelChange(notification.notification_id, e.target.value)}
                       className="font-medium text-gray-800 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-green-500 rounded px-1 text-base md:text-lg"
                     />
-                    <button
-                      onClick={() => handleDelete(notification.id)}
-                      className="text-gray-400 hover:text-red-500 transition-colors duration-200 ease-in-out p-1 rounded-full hover:bg-red-50"
-                      aria-label="Delete notification"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(notification)}
+                        className="text-gray-400 hover:text-blue-500 transition-colors duration-200 ease-in-out p-1 rounded-full hover:bg-blue-50"
+                        aria-label="Edit notification"
                       >
-                        <path
-                          fillRule="evenodd"
-                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(notification.notification_id)}
+                        className="text-gray-400 hover:text-red-500 transition-colors duration-200 ease-in-out p-1 rounded-full hover:bg-red-50"
+                        aria-label="Delete notification"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
@@ -346,16 +636,16 @@ export default function NotificationSettings() {
                       <input
                         type="time"
                         value={notification.time}
-                        onChange={(e) => handleTimeChange(notification.id, e.target.value)}
+                        onChange={(e) => handleTimeChange(notification.notification_id, e.target.value)}
                         className="bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 px-2 py-1 text-gray-700"
                       />
                     </div>
 
                     <div className="flex items-center">
                       <button
-                        id={`toggle-${notification.id}`}
+                        id={`toggle-${notification.notification_id}`}
                         type="button"
-                        onClick={() => handleToggle(notification.id)}
+                        onClick={() => handleToggle(notification.notification_id)}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                           notification.active ? "bg-green-500" : "bg-gray-200"
                         }`}
@@ -370,11 +660,29 @@ export default function NotificationSettings() {
                     </div>
                   </div>
 
-                  <div
-                    className={`mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500 flex justify-between items-center ${notification.active ? "text-green-600" : "text-gray-400"}`}
-                  >
-                    <span>{notification.active ? "Notification enabled" : "Notification disabled"}</span>
-                    <span className="bg-gray-100 px-2 py-1 rounded">ID: {notification.id}</span>
+                  <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+                    <div className="flex justify-between items-center">
+                      <span className={notification.active ? "text-green-600" : "text-gray-400"}>
+                        {notification.active ? "Notification enabled" : "Notification disabled"}
+                      </span>
+                      <span className="bg-gray-100 px-2 py-1 rounded">ID: {notification.notification_id}</span>
+                    </div>
+
+                    {/* Route and Stop information */}
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <div className="bg-gray-50 px-2 py-1 rounded text-xs">
+                        Route:{" "}
+                        {routes.find((r) => r.route_id === notification.route_id)?.route_name ||
+                          notification.route_id ||
+                          "Not set"}
+                      </div>
+                      <div className="bg-gray-50 px-2 py-1 rounded text-xs">
+                        Stop:{" "}
+                        {stops.find((s) => s.stop_id === notification.stop_id)?.stop_name ||
+                          notification.stop_id ||
+                          "Not set"}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))

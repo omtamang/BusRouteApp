@@ -51,3 +51,7 @@ export const deleteBus = (busId) => axios.delete(`http://localhost:8080/bus/dele
 export const updateBus = (bus, routeId, busId) => axios.put(`http://localhost:8080/bus/${busId}/update/${routeId}`, bus)
 
 export const getReminder = (email) => axios.get(`http://localhost:8080/getNotification/${email}`)
+
+export const setReminder = (routeId, stopId, email, reminder) => axios.post(`http://localhost:8080/setReminder/${routeId}/${stopId}/${email}`, reminder)
+
+export const updateReminder = (routeId, stopId, email, notificationId, reminder) => axios.put(`http://localhost:8080/updateReminder/${routeId}/${stopId}/${email}/${notificationId}`, reminder)
