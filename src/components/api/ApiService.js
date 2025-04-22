@@ -55,3 +55,5 @@ export const getReminder = (email) => axios.get(`http://localhost:8080/getNotifi
 export const setReminder = (routeId, stopId, email, reminder) => axios.post(`http://localhost:8080/setReminder/${routeId}/${stopId}/${email}`, reminder)
 
 export const updateReminder = (routeId, stopId, email, notificationId, reminder) => axios.put(`http://localhost:8080/updateReminder/${routeId}/${stopId}/${email}/${notificationId}`, reminder)
+
+export const getAllReminder = () => axios.get("http://localhost:8080/get-reminders")

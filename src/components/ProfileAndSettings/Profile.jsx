@@ -47,7 +47,8 @@ export default function Profile() {
 
   async function deleteUser() {
     try {
-      await deleteEmail(user)
+      const response = await deleteEmail(user)
+      console.log(response)
       setShowDelete(true)
       setTimeout(() => {
         setShowDelete(false)
