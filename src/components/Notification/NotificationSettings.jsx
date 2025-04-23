@@ -45,6 +45,8 @@ export default function NotificationSettings() {
     try {
       const response = await getReminder(user)
       setNotifications(response.data)
+      console.log(notifications[0].notifyRoute.route_name)
+      console.log(notifications[0].notifyStop.stop_name)
     } catch (err) {
       console.log(err)
     }
@@ -368,8 +370,6 @@ export default function NotificationSettings() {
       </header>
 
       <div className="w-full max-w-6xl mx-auto p-4 md:p-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 md:mb-8">Notification Times</h2>
-
         <div className="bg-white rounded-lg shadow-md p-4 md:p-8 border border-gray-200">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 space-y-4 md:space-y-0">
             <div>
@@ -508,18 +508,18 @@ export default function NotificationSettings() {
                   <div className="flex items-center h-10">
                     <button
                       type="button"
-                      onClick={() => setNewNotification((prev) => ({ ...prev, active: !prev.active }))}
+                      onClick={() => setNewNotification((prev) => ({ ...prev, status: !prev.status }))}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                        newNotification.active ? "bg-green-500" : "bg-gray-200"
+                        newNotification.status ? "bg-green-500" : "bg-gray-200"
                       }`}
                     >
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm ${
-                          newNotification.active ? "translate-x-6" : "translate-x-1"
+                          newNotification.status ? "translate-x-6" : "translate-x-1"
                         }`}
                       />
                     </button>
-                    <span className="ml-2 text-sm text-gray-600">{newNotification.active ? "Active" : "Inactive"}</span>
+                    <span className="ml-2 text-sm text-gray-600">{newNotification.status ? "Active" : "Inactive"}</span>
                   </div>
                 </div>
               </div>
@@ -652,18 +652,18 @@ export default function NotificationSettings() {
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out shadow-sm ${
-                            notification.active ? "translate-x-6" : "translate-x-1"
+                            notification.status ? "translate-x-6" : "translate-x-1"
                           }`}
                         />
                       </button>
-                      <span className="ml-2 text-sm text-gray-600">{notification.active ? "Active" : "Inactive"}</span>
+                      <span className="ml-2 text-sm text-gray-600">{notification.status ? "Active" : "Inactive"}</span>
                     </div>
                   </div>
 
                   <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
                     <div className="flex justify-between items-center">
-                      <span className={notification.active ? "text-green-600" : "text-gray-400"}>
-                        {notification.active ? "Notification enabled" : "Notification disabled"}
+                      <span className={notification.status ? "text-green-600" : "text-gray-400"}>
+                        {notification.status ? "Notification enabled" : "Notification disabled"}
                       </span>
                       <span className="bg-gray-100 px-2 py-1 rounded">ID: {notification.notification_id}</span>
                     </div>
@@ -672,13 +672,15 @@ export default function NotificationSettings() {
                     <div className="mt-2 grid grid-cols-2 gap-2">
                       <div className="bg-gray-50 px-2 py-1 rounded text-xs">
                         Route:{" "}
-                        {routes.find((r) => r.route_id === notification.route_id)?.route_name ||
+                        {notification.notifyRoute?.route_name ||
+                          routes.find((r) => r.route_id === notification.route_id)?.route_name ||
                           notification.route_id ||
                           "Not set"}
                       </div>
                       <div className="bg-gray-50 px-2 py-1 rounded text-xs">
                         Stop:{" "}
-                        {stops.find((s) => s.stop_id === notification.stop_id)?.stop_name ||
+                        {notification.notifyStop?.stop_name ||
+                          stops.find((s) => s.stop_id === notification.stop_id)?.stop_name ||
                           notification.stop_id ||
                           "Not set"}
                       </div>
@@ -696,17 +698,8 @@ export default function NotificationSettings() {
                 <h3 className="text-lg font-medium text-gray-700">Notification Summary</h3>
                 <p className="text-sm text-gray-500 mt-1">
                   You have {notifications.length} notification{notifications.length !== 1 ? "s" : ""} configured,
-                  {notifications.filter((n) => n.active).length} active
+                    {notifications.filter((n) => n.status).length}  active
                 </p>
-              </div>
-
-              <div className="flex space-x-4">
-                <button className="px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 ease-in-out">
-                  Export Settings
-                </button>
-                <button className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 ease-in-out">
-                  Reset All
-                </button>
               </div>
             </div>
           </div>
