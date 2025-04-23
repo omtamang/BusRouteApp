@@ -283,116 +283,6 @@ const HeatMap = ({ data, xLabels, yLabels, title }) => (
   </div>
 )
 
-// Stacked Bar Chart Component
-// const StackedBarChart = ({ data, title, xAxisLabel, yAxisLabel }) => (
-//   <div className="h-64 w-full">
-//     <div className="flex h-full items-end space-x-2 pb-6 pt-6 px-2 relative">
-//       {/* Y-axis label */}
-//       <div className="absolute -left-6 top-1/2 -rotate-90 transform text-xs text-gray-500">{yAxisLabel}</div>
-
-//       {/* Stacked Bars */}
-//       {data.map((item, index) => (
-//         <div key={index} className="flex flex-col items-center flex-1">
-//           <div className="w-full flex flex-col-reverse">
-//             {/* Active Reminders */}
-//             <div
-//               className="w-full rounded-t-sm bg-green-500 transition-all duration-300 hover:opacity-80"
-//               style={{
-//                 height: `${
-//                   (item.active / (item.active + item.inactive)) *
-//                   ((item.active + item.inactive) / Math.max(...data.map((d) => d.active + d.inactive))) *
-//                   80
-//                 }%`,
-//               }}
-//             ></div>
-
-//             {/* Inactive Reminders */}
-//             <div
-//               className="w-full bg-red-400 transition-all duration-300 hover:opacity-80"
-//               style={{
-//                 height: `${
-//                   (item.inactive / (item.active + item.inactive)) *
-//                   ((item.active + item.inactive) / Math.max(...data.map((d) => d.active + d.inactive))) *
-//                   80
-//                 }%`,
-//               }}
-//             ></div>
-//           </div>
-//           <span className="mt-2 text-xs text-gray-600 truncate max-w-full" title={item.name}>
-//             {item.name.length > 10 ? `${item.name.substring(0, 10)}...` : item.name}
-//           </span>
-//         </div>
-//       ))}
-
-//       {/* X-axis label */}
-//       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-gray-500">{xAxisLabel}</div>
-
-//       {/* Legend */}
-//       <div className="absolute top-0 right-0 flex items-center space-x-4">
-//         <div className="flex items-center">
-//           <div className="h-3 w-3 bg-green-500 mr-1"></div>
-//           <span className="text-xs">Active</span>
-//         </div>
-//         <div className="flex items-center">
-//           <div className="h-3 w-3 bg-red-400 mr-1"></div>
-//           <span className="text-xs">Inactive</span>
-//         </div>
-//       </div>
-//     </div>
-//   </div>
-// )
-
-// Heat Map Component
-// const HeatMap = ({ data, xLabels, yLabels, title }) => (
-//   <div className="w-full overflow-x-auto">
-//     <div className="min-w-[600px]">
-//       <div className="grid" style={{ gridTemplateColumns: `80px repeat(${xLabels.length}, 1fr)` }}>
-//         {/* Empty top-left cell */}
-//         <div className="h-10"></div>
-
-//         {/* Column headers (routes) */}
-//         {xLabels.map((label, index) => (
-//           <div key={index} className="h-10 flex items-center justify-center text-xs font-medium">
-//             {label.length > 10 ? `${label.substring(0, 10)}...` : label}
-//           </div>
-//         ))}
-
-//         {/* Row headers (time slots) and data cells */}
-//         {yLabels.map((yLabel, yIndex) => (
-//           <>
-//             {/* Row header (time slot) */}
-//             <div key={`y-${yIndex}`} className="flex items-center justify-end pr-2 text-xs">
-//               {yLabel}
-//             </div>
-
-//             {/* Data cells */}
-//             {xLabels.map((xLabel, xIndex) => {
-//               const cellData = data.find((d) => d.x === xLabel && d.y === yLabel)
-//               const value = cellData ? cellData.value : 0
-//               const maxValue = Math.max(...data.map((d) => d.value))
-//               const intensity = value / maxValue
-
-//               return (
-//                 <div
-//                   key={`${xIndex}-${yIndex}`}
-//                   className="h-8 m-1 rounded flex items-center justify-center text-xs"
-//                   style={{
-//                     backgroundColor: `rgba(66, 133, 244, ${intensity * 0.9})`,
-//                     color: intensity > 0.5 ? "white" : "black",
-//                   }}
-//                   title={`${xLabel}: ${value} buses at ${yLabel}`}
-//                 >
-//                   {value > 0 ? value : ""}
-//                 </div>
-//               )
-//             })}
-//           </>
-//         ))}
-//       </div>
-//     </div>
-//   </div>
-// )
-
 export default function RealDashboard() {
   const [activeSection, setActiveSection] = useState("home")
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -422,7 +312,7 @@ export default function RealDashboard() {
     }
   }
 
-  async function getAlPassenger(params) {
+  async function getAlPassenger() {
     try {
       const response = await getUsers()
       return response
@@ -608,24 +498,6 @@ export default function RealDashboard() {
     } catch (error) {
       console.error("Error fetching passenger reminders:", error)
       setMonitorError("Failed to fetch reminders for this passenger.")
-    } finally {
-      setMonitorLoading(false)
-    }
-  }
-
-  // Delete a reminder for a passenger
-  const deleteReminder = async (notificationId, email) => {
-    setMonitorLoading(true)
-    try {
-      // In a real app, you would call an API to delete the reminder
-      // For now, just filter it out from the state
-      setPassengerReminders((prev) => prev.filter((reminder) => reminder.notification_id !== notificationId))
-
-      // Also update the main reminders list
-      setReminders((prev) => prev.filter((reminder) => reminder.notification_id !== notificationId))
-    } catch (error) {
-      console.error("Error deleting reminder:", error)
-      setMonitorError("Failed to delete reminder.")
     } finally {
       setMonitorLoading(false)
     }
@@ -1032,7 +904,7 @@ export default function RealDashboard() {
         }`}
       >
         <div className="flex h-16 items-center px-6 border-b">
-          <h1 className="text-xl font-bold">Transit Admin</h1>
+          <h1 className="text-xl font-bold">NepaGo Admin</h1>
         </div>
 
         {/* Update the sidebar navigation buttons to ensure proper alignment */}
@@ -1087,7 +959,7 @@ export default function RealDashboard() {
           <div className="flex items-center">
             <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white">A</div>
             <div className="ml-3">
-              <p className="text-sm font-medium">Admin User</p>
+              <p className="text-sm font-medium">Admin</p>
               <p className="text-xs text-gray-500">admin@transit.com</p>
             </div>
           </div>

@@ -216,36 +216,11 @@ export default function Profile() {
                   <img
                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvetk9tOwHkQMwe1DfoxempOXosaikcVL5QQ&s"
                     alt="User"
-                    className="rounded-full w-16 h-16 md:w-20 md:h-20 object-cover border-4 border-white shadow-md"
+                    className="rounded-full w-16 h-16 m-auto md:w-20 md:h-20 object-cover border-4 border-white shadow-md"
                   />
-                  <div className="ml-4">
-                    <button className="px-3 py-1.5 rounded-lg border border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-green-950/30 transition-colors text-sm">
-                      <FontAwesomeIcon icon={faEdit} className="mr-2" />
-                      Edit Profile
-                    </button>
-                  </div>
-                </div>
-
-                <div ref={statsRef} className="grid grid-cols-3 gap-2 md:gap-4">
-                  <div className={`text-center p-2 md:p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
-                    <p className="text-lg md:text-2xl font-semibold">12</p>
-                    <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Trips</p>
-                  </div>
-                  <div className={`text-center p-2 md:p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
-                    <p className="text-lg md:text-2xl font-semibold">4.8</p>
-                    <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Rating</p>
-                  </div>
-                  <div className={`text-center p-2 md:p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-100"}`}>
-                    <p className="text-lg md:text-2xl font-semibold">3</p>
-                    <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Years</p>
-                  </div>
                 </div>
 
                 <div ref={actionsRef} className="mt-4 md:mt-6 space-y-2 md:space-y-3">
-                  <button className="w-full py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors">
-                    <FontAwesomeIcon icon={faHistory} className="mr-2" />
-                    View Trip History
-                  </button>
                   <button
                     className="w-full py-2 px-4 rounded-lg border border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                     onClick={() => setShowPopup(true)}
@@ -325,33 +300,6 @@ export default function Profile() {
                 </div>
 
                 <div
-                  ref={(el) => (menuItemsRef.current[2] = el)}
-                  className={`flex items-center justify-between p-3 md:p-4 rounded-xl ${
-                    darkMode ? "bg-gray-700/50 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"
-                  } transition-colors cursor-pointer`}
-                >
-                  <div className="flex items-center">
-                    <div
-                      className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center ${
-                        darkMode ? "bg-green-900" : "bg-green-100"
-                      }`}
-                    >
-                      <FontAwesomeIcon
-                        icon={faShield}
-                        className={`text-sm md:text-base ${darkMode ? "text-green-300" : "text-green-600"}`}
-                      />
-                    </div>
-                    <div className="ml-3 md:ml-4">
-                      <h4 className="font-medium text-sm md:text-base">Privacy & Security</h4>
-                      <p className={`text-xs md:text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                        Manage your security preferences
-                      </p>
-                    </div>
-                  </div>
-                  <span className={`${darkMode ? "text-gray-500" : "text-gray-400"}`}>&#11208;</span>
-                </div>
-
-                <div
                   ref={(el) => (menuItemsRef.current[3] = el)}
                   onClick={toggleDarkMode}
                   className={`flex items-center justify-between p-3 md:p-4 rounded-xl ${
@@ -387,33 +335,6 @@ export default function Profile() {
                       }`}
                     ></div>
                   </div>
-                </div>
-
-                <div
-                  ref={(el) => (menuItemsRef.current[4] = el)}
-                  className={`flex items-center justify-between p-3 md:p-4 rounded-xl ${
-                    darkMode ? "bg-gray-700/50 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"
-                  } transition-colors cursor-pointer`}
-                >
-                  <div className="flex items-center">
-                    <div
-                      className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center ${
-                        darkMode ? "bg-green-900" : "bg-green-100"
-                      }`}
-                    >
-                      <FontAwesomeIcon
-                        icon={faGear}
-                        className={`text-sm md:text-base ${darkMode ? "text-green-300" : "text-green-600"}`}
-                      />
-                    </div>
-                    <div className="ml-3 md:ml-4">
-                      <h4 className="font-medium text-sm md:text-base">App Settings</h4>
-                      <p className={`text-xs md:text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                        Configure app preferences
-                      </p>
-                    </div>
-                  </div>
-                  <span className={`${darkMode ? "text-gray-500" : "text-gray-400"}`}>&#11208;</span>
                 </div>
 
                 {/* Mobile-only logout button */}
