@@ -13,6 +13,7 @@ import EmailVerificationPage from "../ValidationCodeForm/EmailVerificationPage";
 import Busroute from "../BusRoutes/Busroute";
 import RealDashboard from "../dashboard/RealDashboard";
 import NotificationSettings from "../Notification/NotificationSettings";
+import AccountInformation from "../ProfileAndSettings/AccountInformation";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -56,6 +57,10 @@ const Routes = () => {
            {
             path: "/notification/:routeId",
             element: <NotificationSettings/>,
+           },
+           {
+            path: "/account-info/:routeId",
+            element: <AccountInformation/>,
            }
           ],
         },

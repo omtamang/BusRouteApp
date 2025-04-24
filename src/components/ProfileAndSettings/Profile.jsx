@@ -12,11 +12,7 @@ import {
   faRightFromBracket,
   faTrash,
   faXmark,
-  faShield,
   faMoon,
-  faGear,
-  faHistory,
-  faEdit,
 } from "@fortawesome/free-solid-svg-icons"
 import { deleteEmail, getPassenger } from "../api/ApiService"
 import { useAuth } from "../security/AuthProvider"
@@ -248,6 +244,7 @@ export default function Profile() {
                   className={`flex items-center justify-between p-3 md:p-4 rounded-xl ${
                     darkMode ? "bg-gray-700/50 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"
                   } transition-colors cursor-pointer`}
+                  onClick={() => navigate(`/account-info/${routeId}`)}
                 >
                   <div className="flex items-center">
                     <div
@@ -276,9 +273,12 @@ export default function Profile() {
                     darkMode ? "bg-gray-700/50 hover:bg-gray-700" : "bg-gray-50 hover:bg-gray-100"
                   } transition-colors cursor-pointer`}
                 >
-                  <div className="flex items-center" onClick={() => {
-                    navigate(`/notification/${routeId}`)
-                  }}>
+                  <div
+                    className="flex items-center"
+                    onClick={() => {
+                      navigate(`/notification/${routeId}`)
+                    }}
+                  >
                     <div
                       className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center ${
                         darkMode ? "bg-green-900" : "bg-green-100"
