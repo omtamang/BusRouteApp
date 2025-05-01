@@ -19,6 +19,7 @@ import { Link, useParams } from "react-router-dom"
 import { getBusByRouteId, getRouteByid, getStopByRouteId } from "./api/ApiService"
 import gsap from "gsap"
 import BusListPanel from "./BusListPanel" // Import the BusListPanel component
+import StopsListPanel from "./StopsListPanel" // Import the StopsListPanel component
 
 // Constants
 const DEFAULT_CENTER = { lat: 27.7172, lon: 85.324 } // Kathmandu
@@ -176,7 +177,7 @@ function calculateRoadDirection(position, routeCoordinates) {
 function BusInfoCard({ bus, route, stop, onPrevBus, onNextBus, buses }) {
   if (!bus) return null
 
-  console.log(bus);
+  console.log(bus)
 
   const busNo = bus.busNo || `Bus ${bus.busId || "Unknown"}`
   const busName = bus.name || "NepaGo"
@@ -718,6 +719,9 @@ export default function BasicMap() {
   // State for BusListPanel
   const [isBusListPanelOpen, setIsBusListPanelOpen] = useState(false)
 
+  // State for StopsListPanel
+  const [isStopsListPanelOpen, setIsStopsListPanelOpen] = useState(false)
+
   // Animation refs for the control buttons
   const controlsRef = useRef(null)
   const busRouteButtonRef = useRef(null)
@@ -1002,11 +1006,29 @@ export default function BasicMap() {
   // Toggle bus list panel
   const toggleBusListPanel = useCallback(() => {
     setIsBusListPanelOpen((prevState) => !prevState)
-  }, [])
+    // Close the stops panel if it's open
+    if (isStopsListPanelOpen) {
+      setIsStopsListPanelOpen(false)
+    }
+  }, [isStopsListPanelOpen])
 
   // Close bus list panel
   const closeBusListPanel = useCallback(() => {
     setIsBusListPanelOpen(false)
+  }, [])
+
+  // Toggle stops list panel
+  const toggleStopsListPanel = useCallback(() => {
+    setIsStopsListPanelOpen((prevState) => !prevState)
+    // Close the bus list panel if it's open
+    if (isBusListPanelOpen) {
+      setIsBusListPanelOpen(false)
+    }
+  }, [isBusListPanelOpen])
+
+  // Close stops list panel
+  const closeStopsListPanel = useCallback(() => {
+    setIsStopsListPanelOpen(false)
   }, [])
 
   return (
@@ -1035,7 +1057,7 @@ export default function BasicMap() {
           <FontAwesomeIcon icon={faRoute} className="text-lg" />
         </div>
 
-        <div className="map-control-btn">
+        <div className={`map-control-btn ${isStopsListPanelOpen ? "active" : ""}`} onClick={toggleStopsListPanel}>
           <FontAwesomeIcon icon={faCircleStop} className="text-lg" />
         </div>
 
@@ -1068,8 +1090,8 @@ export default function BasicMap() {
         <MapController center={center} shouldCenter={shouldCenterOnBus} />
       </MapContainer>
 
-      {/* Bus Information Card - only show when panel is closed */}
-      {!isBusListPanelOpen && (
+      {/* Bus Information Card - only show when panels are closed */}
+      {!isBusListPanelOpen && !isStopsListPanelOpen && (
         <BusInfoCard
           bus={selectedBus}
           route={route}
@@ -1089,6 +1111,9 @@ export default function BasicMap() {
         getStopByRouteId={getStopByRouteId}
         getBusByRouteId={getBusByRouteId}
       />
+
+      {/* Stops List Panel */}
+      <StopsListPanel routeId={routeId} isOpen={isStopsListPanelOpen} onClose={closeStopsListPanel} />
 
       {error && (
         <div className="absolute top-20 left-5 md:top-24 md:left-8 bg-red-500 text-white p-2 rounded-lg shadow-md">

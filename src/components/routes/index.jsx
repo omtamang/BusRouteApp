@@ -14,6 +14,7 @@ import Busroute from "../BusRoutes/Busroute";
 import RealDashboard from "../dashboard/RealDashboard";
 import NotificationSettings from "../Notification/NotificationSettings";
 import AccountInformation from "../ProfileAndSettings/AccountInformation";
+import StopsListPanel from "../StopsListPanel";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -61,6 +62,10 @@ const Routes = () => {
            {
             path: "/account-info/:routeId",
             element: <AccountInformation/>,
+           },
+           {
+            path: "/stops",
+            element: <StopsListPanel/>,
            }
           ],
         },
