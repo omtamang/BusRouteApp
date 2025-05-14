@@ -8,6 +8,7 @@ import UserDashboard from "./UserDashboard"
 import BusDashboard from "./BusDashboard"
 import { getBus, getRoutes, getStops, getUsers, getAllReminder } from "../api/ApiService"
 import React from "react"
+import { useAuth } from "../security/AuthProvider"
 
 // Custom simple components instead of shadcn/ui
 const Card = ({ children, className = "" }) => (
@@ -301,6 +302,15 @@ export default function RealDashboard() {
   const [routes, setRoutes] = useState([])
   const [stops, setStops] = useState([])
   const [timeRange, setTimeRange] = useState("day")
+
+  const { setToken } = useAuth()
+
+  const handleLogout = () => {
+    // Clear the authentication token
+    setToken(null)
+    // Redirect to admin login page
+    window.location.href = "/adminLogin"
+  }
 
   async function getAllBus() {
     try {
@@ -730,6 +740,24 @@ export default function RealDashboard() {
     </svg>
   )
 
+  const LogoutIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+      <polyline points="16 17 21 12 16 7"></polyline>
+      <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
+  )
+
   // Fix the renderContent function to fix data processing issues
   const renderContent = () => {
     switch (activeSection) {
@@ -956,12 +984,22 @@ export default function RealDashboard() {
         </nav>
 
         <div className="absolute bottom-0 w-full p-4 border-t">
-          <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white">A</div>
-            <div className="ml-3">
-              <p className="text-sm font-medium">Admin</p>
-              <p className="text-xs text-gray-500">admin@transit.com</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white">A</div>
+              <div className="ml-3">
+                <p className="text-sm font-medium">Admin</p>
+                <p className="text-xs text-gray-500">admin@transit.com</p>
+              </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              onClick={handleLogout}
+            >
+              <LogoutIcon />
+            </Button>
           </div>
         </div>
       </div>

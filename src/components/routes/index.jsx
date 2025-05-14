@@ -14,8 +14,7 @@ import Busroute from "../BusRoutes/Busroute";
 import RealDashboard from "../dashboard/RealDashboard";
 import NotificationSettings from "../Notification/NotificationSettings";
 import AccountInformation from "../ProfileAndSettings/AccountInformation";
-import StopsListPanel from "../StopsListPanel";
-import TawkChat from "../TwakChat";
+import AdminLogin from "../Login/AdminLogin";
 
 const Routes = () => {
     const { token } = useAuth();
@@ -84,6 +83,10 @@ const Routes = () => {
         {
           path: "/login",
           element: <Login/>,
+        },
+        {
+          path: "/adminLogin",
+          element: <AdminLogin/>,
         },
       ];
       
